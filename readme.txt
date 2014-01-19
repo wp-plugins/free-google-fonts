@@ -1,0 +1,54 @@
+=== Google Fonts For WordPress ===
+Contributors: KAPlugins
+Donate link: http://wordpressplugins.cc/donate.html
+Tags: google fonts, font tools, tools, font replace, font replacing
+Requires at least: 3.6
+Tested up to: 3.8
+Stable tag: 1.0
+License: GPLv2
+
+Google Fonts For WordPress is a plugin which allows fast and easy add new Google Fonts to your website. You can use them in your visual editor.
+
+== Description ==
+
+Google Fonts For WordPress is a plugin which allows fast and easy add new Google Fonts to your website. You can use them in your visual editor. It contains fast font replacing, advanced font filter and extra fonts sizes. Very easy to install and configure. 
+
+= Plugin's Official Site =
+
+Google Fonts For Wordpress ([http://wordpressplugins.cc](http://wordpressplugins.cc/))
+
+
+== Installation ==
+
+1. Login to WordPress admin panel, go to 'Plugins', next click 'Add New', choose 'Upload', click 'Browse' and find a kaplugins-gfonts.zip and next click 'Upload Now'
+
+2. If plugin is installed, remember to activate it.
+
+3. In the left menu new options will appear. 
+
+== Frequently Asked Questions ==
+
+
+== Screenshots ==
+
+1. screenshot-1.png
+2. screenshot-2.png
+3. screenshot-3.png
+4. screenshot-4.png
+5. screenshot-5.png
+6. screenshot-6.png
+7. screenshot-7.png
+8. screenshot-8.png
+9. screenshot-9.png
+10. screenshot-10.png
+11. screenshot-11.png
+12. screenshot-12.png
+
+
+== Upgrade Notice ==
+
+ No upgrades for now. Current version v1.0.
+
+== Changelog == 
+
+19/01/2014 – v1.0
