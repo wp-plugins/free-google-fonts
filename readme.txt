@@ -1,6 +1,6 @@
 === Google Fonts For WordPress ===
 Contributors: KAPlugins
-Donate link: http://wordpressplugins.cc/donate.html
+Donate link: http://powerposts.net/donate.html
 Tags: google fonts, font tools, tools, font replace, font replacing
 Requires at least: 3.6
 Tested up to: 3.8
@@ -15,7 +15,7 @@ Google Fonts For WordPress is a plugin which allows fast and easy add new Google
 
 = Plugin's Official Site =
 
-Google Fonts For Wordpress ([http://wordpressplugins.cc](http://wordpressplugins.cc/))
+Google Fonts For Wordpress ([http://powerposts.net](http://powerposts.net/))
 
 
 == Installation ==
