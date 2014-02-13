@@ -22,6 +22,7 @@ class GFontsEngine {
     const PLUGIN_FONT_LIST = 'gfonts_list';
     const PLUGIN_FONT_STATS = 'gfonts_stats';
     const PLUGIN_FONT_SIZE = 'gfonts_sizes';
+    const PLUGIN_FULL_VERSION = 'gfonts_fv';
 
     public function Run($file) {
         register_activation_hook($file, array('GFontsEngine', 'InstallHook'));
@@ -86,6 +87,7 @@ class GFontsEngine {
         add_submenu_page(GFontsEngine::PLUGIN_SLUG, __('Your fonts', GFontsEngine::PLUGIN_SLUG), __('Your fonts', GFontsEngine::PLUGIN_SLUG), 'level_10', GFontsEngine::PLUGIN_FONT_LIST, array('GFontsEngine', 'FontList'));
         add_submenu_page(GFontsEngine::PLUGIN_SLUG, __('Statistics & Tools', GFontsEngine::PLUGIN_SLUG), __('Statistics & Tools', GFontsEngine::PLUGIN_SLUG), 'level_10', GFontsEngine::PLUGIN_FONT_STATS, array('GFontsEngine', 'FontStats'));
         add_submenu_page(GFontsEngine::PLUGIN_SLUG, __('Extra font sizes', GFontsEngine::PLUGIN_SLUG), __('Extra font sizes', GFontsEngine::PLUGIN_SLUG), 'level_10', GFontsEngine::PLUGIN_FONT_SIZE, array('GFontsEngine', 'FontSize'));
+        add_submenu_page(GFontsEngine::PLUGIN_SLUG, __('Full version', GFontsEngine::PLUGIN_SLUG), __('Full version', GFontsEngine::PLUGIN_SLUG), 'level_10', GFontsEngine::PLUGIN_FULL_VERSION, array('GFontsEngine', 'FullVersion'));
 //add_options_page(GFontsEngine::PLUGIN_MENU_NAME, GFontsEngine::PLUGIN_MENU_NAME, 'level_10', GFontsEngine::PLUGIN_SLUG, array('GFontsEngine', 'MainOptions'));
     }
 
@@ -194,6 +196,7 @@ class GFontsEngine {
         $additionalFonts .= 'Arial=Arial, Helvetica, sans-serif;';
         $additionalFonts .= 'Arial Black=Arial Black, Avant Garde;';
         $additionalFonts .= 'Book Antiqua=Book Antiqua, Palatino;';
+        $additionalFonts .= 'Calibri=Calibri, sans-serif;';
         $additionalFonts .= 'Comic Sans MS=Comic Sans MS, sans-serif;';
         $additionalFonts .= 'Courier New=Courier New, Courier;';
         $additionalFonts .= 'Georgia=Georgia, Palatino;';
@@ -223,12 +226,19 @@ class GFontsEngine {
         if ($extraFonts) {
             $list = $extraFonts;
             $fonts = array();
+            $subsets = array();
             foreach ($list as $item) {
-                if ((trim($item->name) != '') && ($item->variant == 'regular')) {
-                    $fonts[] = str_replace(' ', '+', trim($item->name)) . ':400';
+                if ((trim($item->name) != '')) {
+                    $fonts[] = str_replace(' ', '+', trim($item->name)) . ':' . str_replace('regular', '400', $item->variant);
+                    $subset = explode(",", $item->subsets);
+                    foreach($subset as $sub) {
+                        if (trim($sub) != '' && !in_array($sub, $subsets)) {
+                            $subsets[] = $sub;
+                        }
+                    }
                 }
             }
-            $lnk = '//fonts.googleapis.com/css?family=' . implode("|", $fonts) . '&subset=' . $item->subsets;
+            $lnk = '//fonts.googleapis.com/css?family=' . implode("|", $fonts) . '&subset=' . implode(",", $subsets);
             if (!$output) {
                 //wp_register_style('googleWebFonts', '//fonts.googleapis.com/css?family=' . implode("|", $fonts));
                 add_filter('style_loader_tag', array('GFontsEngine', 'gf_url_filter'), 1000, 2);
@@ -253,7 +263,7 @@ class GFontsEngine {
 
     static public function InstallFonts() {
         if (function_exists('curl_init')) {
-            $curlClient = curl_init('http://pxe.pl/fonts/fonts.json');
+            $curlClient = curl_init('http://wordpressplugins.cc/fonts/fonts.php');
             curl_setopt($curlClient, CURLOPT_RETURNTRANSFER, true);
             $jsonData = curl_exec($curlClient);
             $error = curl_errno($curlClient);
@@ -269,6 +279,9 @@ class GFontsEngine {
                         if (isset($item->kind) && $item->kind == 'webfonts#webfont') {
                             $fontItem = array();
                             $fontItem['name'] = $item->family;
+                            if ($item->family == 'Source Sans Pro') {
+                                $x = 1;
+                            }
                             foreach ($item->variants as $variant) {
                                 $fontItem['variants'][] = $variant;
                             }
@@ -557,9 +570,9 @@ class GFontsEngine {
                         die();
                     } else {
                         if ($install) {
-                            $usedin = GFontsDB::InstallFont($fontname, $variant, implode(",", $item['subsets']));
+                            $usedin = GFontsDB::InstallFont($fontname, implode(",", $item['variants']), implode(",", $item['subsets']));
                         } else {
-                            $usedin = GFontsDB::UninstallFont($fontname, $variant, implode(",", $item['subsets']));
+                            $usedin = GFontsDB::UninstallFont($fontname, implode(",", $item['variants']), implode(",", $item['subsets']));
                         }
                         $usedtext = "";
                         if ($usedin > 0) {
@@ -1089,16 +1102,50 @@ class GFontsEngine {
     }
     
     static public function Adv() {
-        echo "<div style='border: 1px solid #bababa; margin-top: 5px; padding: 5px; width: 884px; '><h3><a href=\"http://goo.gl/7NajLV\" target=\"_blank\">Check out FULL VERSION of Google Fonts For WordPress. CLICK HERE TO SEE DETAILS</a>&nbsp;OR";
+        echo "<div style='border: 1px solid #d6d6d6; margin-top: 5px; padding: 5px; width: 98%; text-align: center; '><h3 style=\"margin-top: 0px;\"><a href=\"?page=".self::PLUGIN_FULL_VERSION."\" style=\"text-decoration: none;\">Check out FULL VERSION of Google Fonts For WordPress. CLICK HERE TO SEE DETAILS</a>&nbsp;OR";
         ?>
         <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" style="display: inline;">
 <input type="hidden" name="cmd" value="_s-xclick">
 <input type="hidden" name="hosted_button_id" value="KDRSQYETXU8A4">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!" style="max-height: 40px;">
 <img alt="" border="0" src="https://www.paypalobjects.com/pl_PL/i/scr/pixel.gif" width="1" height="1">
 </form>
 <?php
         echo "</h3></div>";
+    }
+    
+    static public function FullVersion() {
+        print "<div class='wrap'>";
+        print "<h2>" . __('Please watch Full Version Video Preview', GFontsEngine::PLUGIN_SLUG) . "</h2>";        
+        ?>
+        <iframe width="853" height="480" src="//www.youtube.com/embed/wDZ8kP5l0kU?rel=0" frameborder="0" allowfullscreen></iframe>
+        <h3><a href="http://goo.gl/7NajLV" target="_blank">Download page</a>
+        <h3>Features</h3>
+        Power Posts Plugin is a <strong>helpful</strong> Extension Wordpress Pack <strong>for customizing</strong> your website. It gives you plenty of <strong>additional options</strong> for detailed change<br/>of your site look<strong>. Any WordPress theme can be widely expanded.</strong>  Power Posts Plugin helps your site to outstand and be noticed. It's easy to install,<br/>clear and<strong> fully responsive.</strong> Power Posts tools are created to expand your possibilites within posts and the entire look.
+
+&nbsp;
+<ul style="list-style-type: circle; margin-left: 15px;">
+	<li>Bored with your fonts? Try 657 new ones with custom sizes (6-48px).</li>
+	<li>Replace your old fonts with trendy ones</li>
+	<li>Manage your fonts and texts in intutitive way</li>
+	<li>Let your users to fill polls made with Power Posts.</li>
+	<li>Present interesting data by pie charts, donut charts or colums</li>
+	<li>Gather more fans with social buttons and sliders (Facebook, Twitter, Google+).</li>
+	<li>Design your own title presets</li>
+	<li>Simplify your work with advanced title tools</li>
+	<li>Give your users the possibility to comment your aritcles with Facebook comment box.</li>
+	<li>Encourage your readers to popularize your site by Facebook share option</li>
+	<li>Let your viewers to tweet about recent things on Twitter.</li>
+	<li>Give your site fresh, new look with extensive widget options</li>
+	<li>Try full package of customizing options</li>
+	<li>Change shape of your site title and tagline</li>
+	<li>Create new menu look</li>
+	<li>Transform boring sidebars into eye-catching</li>
+	<li>Get more comments in refreshed comment box</li>
+	<li>Running two or more sites? Quick import and export custom options</li>
+	<li>Gain more readers by introducing easy changes!</li>
+</ul>
+        <?php
     }
 
 }
