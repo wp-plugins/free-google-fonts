@@ -214,6 +214,14 @@ class GFontsEngine {
         $config['editor_selector'] = 'tinymce-textarea';
         $config['theme_advanced_fonts'] = $additionalFonts;
         $config['content_css'] = $contentCss;
+		
+        if (strpos($config['theme_advanced_buttons1'], 'fontsizeselect') === false) {
+            $config['theme_advanced_buttons1'] .= ',fontsizeselect';
+        }
+		if (strpos($config['theme_advanced_buttons1'], 'fontselect') === false) {
+            $config['theme_advanced_buttons1'] .= ',fontselect';
+        }
+        
         if (get_option(GFontsEngine::PLUGIN_OPTION_FONT_SIZE_ENABLED) == true) {
             $config['theme_advanced_buttons1'] = $config['theme_advanced_buttons1'] . ',fontsizeselect';
             $config['theme_advanced_font_sizes'] = GFontsEngine::BuildFontSizes();
