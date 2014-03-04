@@ -4,7 +4,7 @@ Plugin Name: KAPlugins GFonts - Google Fonts For WordPress
 Plugin URI: http://powerposts.net/
 Description: Easy add fonts from Google Fonts to your TinyMCE and WordPress!
 Author: KAPlugins
-Version: 1.1
+Version: 1.2
 Author URI: http://powerposts.net/
 */
 
