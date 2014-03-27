@@ -1110,15 +1110,7 @@ class GFontsEngine {
     }
     
     static public function Adv() {
-        echo "<div style='border: 1px solid #d6d6d6; margin-top: 5px; padding: 5px; width: 98%; text-align: center; '><h3 style=\"margin-top: 0px;\"><a href=\"?page=".self::PLUGIN_FULL_VERSION."\" style=\"text-decoration: none;\">Check out FULL VERSION of Google Fonts For WordPress. CLICK HERE TO SEE DETAILS</a>&nbsp;OR";
-        ?>
-        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" style="display: inline;">
-<input type="hidden" name="cmd" value="_s-xclick">
-<input type="hidden" name="hosted_button_id" value="KDRSQYETXU8A4">
-<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!" style="max-height: 40px;">
-<img alt="" border="0" src="https://www.paypalobjects.com/pl_PL/i/scr/pixel.gif" width="1" height="1">
-</form>
-<?php
+        echo "<div style='border: 1px solid #d6d6d6; margin-top: 5px; padding: 5px; width: 98%; text-align: center; '><h3 style=\"margin-top: 0px;\"><a href=\"?page=".self::PLUGIN_FULL_VERSION."\" style=\"text-decoration: none;\">Check out FULL VERSION of Google Fonts For WordPress. CLICK HERE TO SEE DETAILS</a>";
         echo "</h3></div>";
     }
     
