@@ -51,9 +51,6 @@ Google Fonts For Wordpress ([http://powerposts.net](http://powerposts.net/))
 
 == Changelog == 
 
-27/03/2014 - v1.2.1
-+ resolved conflict when commercial version of plugin is installed
-
 21/04/2014 - v1.2.2
 + compatibility with WordPress 3.9 and resolved conflict with other plugin
 
