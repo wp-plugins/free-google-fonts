@@ -28,7 +28,7 @@ class GFontsEngine {
         register_activation_hook($file, array('GFontsEngine', 'InstallHook'));
         register_uninstall_hook($file, array('GFontsEngine', 'UninstallHook'));
         add_action('admin_menu', array('GFontsEngine', 'AddMenuItem'));
-        add_filter('mce_buttons', array('GFontsEngine', 'ManageFontSelection'));
+        add_filter('mce_buttons', array('GFontsEngine', 'ManageFontSelection'), 9000);
         add_filter('tiny_mce_before_init', array('GFontsEngine', 'ManageTinyMceFonts'), 9000);
         add_action('admin_init', array('GFontsEngine', 'RegisterSettings'));
         add_action('wp_print_styles', array('GFontsEngine', 'IncludeCssForFonts'));
@@ -112,14 +112,14 @@ class GFontsEngine {
                 . "<a href=\"admin.php?page=" . GFontsEngine::PLUGIN_SLUG . "&act=update\">" . __('Update now!', GFontsEngine::PLUGIN_SLUG) . "</a>";
         GFontsUI::Notice($txt);
         ?>
-        <table class="form-table">  
+        <table class="form-table">
             <tr valign="top">
                 <th scope="row"><b><?php print __("Available Google Fonts", GFontsEngine::PLUGIN_SLUG); ?></b></th>
                 <!--<th scope="row"><b><?php _e("Variants for selected font", GFontsEngine::PLUGIN_SLUG) ?></b></th>
                 <th scope="row"><b><?php _e("Character sets for selected font", GFontsEngine::PLUGIN_SLUG) ?></b></th>-->
             </tr>
             <tr valign="top">
-                <td><select name="<?php echo GFontsEngine::PLUGIN_OPTION_FONTLIST; ?>" id="<?php echo GFontsEngine::PLUGIN_OPTION_FONTLIST; ?>" style="width: 350px;"><?php echo GFontsEngine::AvailableFontListAsHtmlOptions() ?></select></td>            
+                <td><select name="<?php echo GFontsEngine::PLUGIN_OPTION_FONTLIST; ?>" id="<?php echo GFontsEngine::PLUGIN_OPTION_FONTLIST; ?>" style="width: 350px;"><?php echo GFontsEngine::AvailableFontListAsHtmlOptions() ?></select></td>
 
                                                                                                                                                                                                                                                                                                                                 <!--<td>
                                                                                                                                                                                                                                                                                                                                     <select multiple size="8" name="variants" id="variants" style="width: 350px;">
@@ -163,6 +163,7 @@ class GFontsEngine {
 
     static public function ManageFontSelection($btns) {
         array_push($btns, 'fontselect');
+	array_push($btns, 'fontsizeselect');
         return $btns;
     }
 
@@ -180,13 +181,16 @@ class GFontsEngine {
                 //$additionalFonts .= sprintf('%s=%s, sans-serif;font-weight: %s; font-style: %s;', $fname, $item->name, GFontsEngine::TranslateVariantNameToWeight($item->variant), GFontsEngine::TranslateVariantToFontStyle($item->variant));
                 if (!in_array($item->name, $families)) {
                     $families[] = $item->name;
-                    $additionalFonts .= sprintf('%s=%s, sans-serif;', $item->name, $item->name); //, GFontsEngine::TranslateVariantNameToWeight($item->variant), GFontsEngine::TranslateVariantToFontStyle($item->variant));
+                    $additionalFonts .= sprintf('%s=\'%s\', sans-serif;', $item->name, $item->name); //, GFontsEngine::TranslateVariantNameToWeight($item->variant), GFontsEngine::TranslateVariantToFontStyle($item->variant));
                 }
                 $variants[$item->name][] = $item->variant;
             }
             foreach ($families as $family) {
                 foreach ($variants[$family] as $variant) {
-                    $contentCssArray[] = sprintf('http://fonts.googleapis.com/css?family=%s:%s', str_replace(' ', '+', $family), $variant);
+		    $css = sprintf('http://fonts.googleapis.com/css?family=%s:%s', str_replace(' ', '+', $family), rawurlencode($variant));
+		    $css2 = sprintf('http://fonts.googleapis.com/css?family=%s:%s', str_replace(' ', '+', $family), $variant);
+                    $contentCssArray[] = $css;
+		    wp_enqueue_style('gf-css-' . uniqid(), $css2);
                 }
             }
         }
@@ -213,18 +217,20 @@ class GFontsEngine {
 
         $config['editor_selector'] = 'tinymce-textarea';
         $config['theme_advanced_fonts'] = $additionalFonts;
+	$config['font_formats'] = $additionalFonts;
         $config['content_css'] = $contentCss;
-		
+
         if (strpos($config['theme_advanced_buttons1'], 'fontsizeselect') === false) {
             $config['theme_advanced_buttons1'] .= ',fontsizeselect';
         }
 		if (strpos($config['theme_advanced_buttons1'], 'fontselect') === false) {
             $config['theme_advanced_buttons1'] .= ',fontselect';
         }
-        
+
         if (get_option(GFontsEngine::PLUGIN_OPTION_FONT_SIZE_ENABLED) == true) {
             $config['theme_advanced_buttons1'] = $config['theme_advanced_buttons1'] . ',fontsizeselect';
             $config['theme_advanced_font_sizes'] = GFontsEngine::BuildFontSizes();
+	    $config['fontsize_formats'] = str_replace(',', ' ', GFontsEngine::BuildFontSizes());
         }
         return $config;
     }
@@ -743,7 +749,7 @@ class GFontsEngine {
             print '<strong>' . sprintf(_n('%d post', '%d posts', $fnt->used_in_posts, GFontsEngine::PLUGIN_SLUG), $fnt->used_in_posts) . '</strong>';
             if ($fnt->in_trash > 0) {
                 print '&nbsp; + <strong>' . sprintf(_n('%d post in trash', '%d posts in trash', $fnt->in_trash, GFontsEngine::PLUGIN_SLUG), $fnt->in_trash) . '</strong>';
-            }            
+            }
             print '</td>';
             print '</tr>';
         }
@@ -1048,11 +1054,11 @@ class GFontsEngine {
     static public function BeforeDelete($postid) {
         GFontsDB::PostDeleted($postid);
     }
-    
+
     static public function TrashedPost($postid) {
         GFontsDB::TrashedPost($postid);
     }
-    
+
     static public function UntrashedPost($postid) {
         GFontsDB::UntrashedPost($postid);
     }
@@ -1097,8 +1103,8 @@ class GFontsEngine {
             $min = 6;
         }
         $max = intval(get_option(GFontsEngine::PLUGIN_OPTION_FONT_SIZE_MAXIMUM));
-        if (($max == 0) || ($max > 36)) {
-            $max = 36;
+        if (($max == 0) || ($max > 48)) {
+            $max = 48;
         }
 
         $fs = array();
@@ -1108,15 +1114,15 @@ class GFontsEngine {
 
         return implode(",", $fs);
     }
-    
+
     static public function Adv() {
         echo "<div style='border: 1px solid #d6d6d6; margin-top: 5px; padding: 5px; width: 98%; text-align: center; '><h3 style=\"margin-top: 0px;\"><a href=\"?page=".self::PLUGIN_FULL_VERSION."\" style=\"text-decoration: none;\">Check out FULL VERSION of Google Fonts For WordPress. CLICK HERE TO SEE DETAILS</a>";
         echo "</h3></div>";
     }
-    
+
     static public function FullVersion() {
         print "<div class='wrap'>";
-        print "<h2>" . __('Please watch Full Version Video Preview', GFontsEngine::PLUGIN_SLUG) . "</h2>";        
+        print "<h2>" . __('Please watch Full Version Video Preview', GFontsEngine::PLUGIN_SLUG) . "</h2>";
         ?>
         <iframe width="853" height="480" src="//www.youtube.com/embed/wDZ8kP5l0kU?rel=0" frameborder="0" allowfullscreen></iframe>
         <h3><a href="http://goo.gl/7NajLV" target="_blank">Download page</a>
