@@ -3,8 +3,8 @@ Contributors: KAPlugins
 Donate link: http://powerposts.net/donate.html
 Tags: fonts, Google Fonts WordPress, google webfonts, Theme Fonts, Theme Fonts Plugin, typography, webfonts, WordPress Fonts, WordPress Google Fonts Plugin, WordPress Webfonts, CSS, design, font, free fonts, google, Google fonts, typography, add fonts, CSS, manage fonts, site style, style sheet, styles, stylesheet, typography, Font Manager, font tools, tools, font replace, font replacing, font plugin
 Requires at least: 3.6
-Tested up to: 3.8
-Stable tag: 1.2.1
+Tested up to: 3.9
+Stable tag: 1.2.2
 License: GPLv2
 
 Google Fonts For WordPress is a plugin which allows fast and easy add new Google Fonts to your website. You can use them in your visual editor.
