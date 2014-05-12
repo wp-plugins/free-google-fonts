@@ -1,85 +1,63 @@
-function SetValuesForCurrentFont() {
-    var x = jQuery('#gfonts_list').val();
-    //var variants = gFontsVariants[x];
-    //var subsets = gFontsSubsets[x];
-    //jQuery('#variants').html('');
-    //jQuery('#subsets').html('');
-    //for (var i = 0; i < variants.length; i++) {
-        //var opt = document.createElement("option");
-        //opt.value = variants[i];
-        //opt.innerHTML = TranslateVariant(variants[i]);
-        //jQuery('#variants').append(opt);
-    //}
-    //for (var i = 0; i < subsets.length; i++) {
-        //var opt = document.createElement("option");
-        //opt.value = subsets[i];
-        //opt.innerHTML = subsets[i];
-        //jQuery('#subsets').append(opt);
-    //}
-
-    var autopreview = jQuery('#gf_autopreview').is(':checked');
-    if (autopreview) {
-        ShowPreview();
-    }
-}
-
+/*jslint browser:true */
+/*global jQuery,ajaxurl*/
+"use strict";
 function TranslateVariant(variant) {
     var name = variant;
     switch (variant) {
-        case '100':
-            name = 'Thin 100';
-            break;
-        case '100italic':
-            name = 'Thin 100 Italic';
-            break;
-        case '200':
-            name = 'Extra-Light 200';
-            break;
-        case '200italic':
-            name = 'Extra-Light 200 Italic';
-            break;
-        case '300':
-            name = 'Light 300';
-            break;
-        case '300italic':
-            name = 'Light 300 Italic';
-            break;
-        case 'regular':
-            name = 'Normal 400';
-            break;
-        case 'italic':
-            name = 'Normal 400 Italic';
-            break;
-        case '500':
-            name = 'Medium 500';
-            break;
-        case '500italic':
-            name = 'Medium 500 Italic';
-            break;
-        case '600':
-            name = 'Semi-Bold 600';
-            break;
-        case '600italic':
-            name = 'Semi-Bold 600 Italic';
-            break;
-        case '700':
-            name = 'Bold 700';
-            break;
-        case '700italic':
-            name = 'Bold 700 Italic';
-            break;
-        case '800':
-            name = 'Extra-Bold 800';
-            break;
-        case '800italic':
-            name = 'Extra-Bold 800 Italic';
-            break;
-        case '900':
-            name = 'Ultra-Bold 900';
-            break;
-        case '900italic':
-            name = 'Ultra-Bold 900 Italic';
-            break;
+    case '100':
+        name = 'Thin 100';
+        break;
+    case '100italic':
+        name = 'Thin 100 Italic';
+        break;
+    case '200':
+        name = 'Extra-Light 200';
+        break;
+    case '200italic':
+        name = 'Extra-Light 200 Italic';
+        break;
+    case '300':
+        name = 'Light 300';
+        break;
+    case '300italic':
+        name = 'Light 300 Italic';
+        break;
+    case 'regular':
+        name = 'Normal 400';
+        break;
+    case 'italic':
+        name = 'Normal 400 Italic';
+        break;
+    case '500':
+        name = 'Medium 500';
+        break;
+    case '500italic':
+        name = 'Medium 500 Italic';
+        break;
+    case '600':
+        name = 'Semi-Bold 600';
+        break;
+    case '600italic':
+        name = 'Semi-Bold 600 Italic';
+        break;
+    case '700':
+        name = 'Bold 700';
+        break;
+    case '700italic':
+        name = 'Bold 700 Italic';
+        break;
+    case '800':
+        name = 'Extra-Bold 800';
+        break;
+    case '800italic':
+        name = 'Extra-Bold 800 Italic';
+        break;
+    case '900':
+        name = 'Ultra-Bold 900';
+        break;
+    case '900italic':
+        name = 'Ultra-Bold 900 Italic';
+        break;
     }
 
     return name;
@@ -94,7 +72,7 @@ function ShowPreview() {
         size: jQuery('#preview_fontsize').val(),
         text: jQuery('#preview_text').val(),
     };
-    jQuery.post(ajaxurl, data, function(response) {
+    jQuery.post(ajaxurl, data, function (response) {
         jQuery('#example_area').html(response);
     });
 
@@ -110,7 +88,7 @@ function ShowPreviewForAll(page) {
         text: jQuery('#preview_text').val(),
         page: page
     };
-    jQuery.post(ajaxurl, data, function(response) {
+    jQuery.post(ajaxurl, data, function (response) {
         jQuery('#example_area').html(response);
     });
 
@@ -118,48 +96,55 @@ function ShowPreviewForAll(page) {
 }
 
 function NextPage() {
-    var page = parseInt(jQuery('#gfpage').val()) + 1;
+    var page = parseInt(jQuery('#gfpage').val(), 10) + 1;
     return ShowPreviewForAll(page);
 }
 
 function PreviousPage() {
-    var page = parseInt(jQuery('#gfpage').val()) - 1;
+    var page = parseInt(jQuery('#gfpage').val(), 10) - 1;
     return ShowPreviewForAll(page);
 }
 
 function GfInstallFont(name, variant, obj) {
-    var span = jQuery(obj).parent();
+    var span = jQuery(obj).parent(),
+        data = {
+            action: 'gfonts_install_font',
+            name: name,
+            variant: variant
+        };
     jQuery(obj).parent().html('Installing...');
-    var data = {
-        action: 'gfonts_install_font',
-        name: name,
-        variant: variant
-    };
-    jQuery.post(ajaxurl, data, function(response) {
+    jQuery.post(ajaxurl, data, function (response) {
         span.html(response);
     });
-    
+
     return false;
 }
 
 function GfUninstallFont(name, variant, obj) {
-    var span = jQuery(obj).parent();
+    var span = jQuery(obj).parent(),
+        data = {
+            action: 'gfonts_uninstall_font',
+            name: name,
+            variant: variant
+        };
     jQuery(obj).parent().html('Uninstalling...');
-    var data = {
-        action: 'gfonts_uninstall_font',
-        name: name,
-        variant: variant
-    };
-    jQuery.post(ajaxurl, data, function(response) {
+    jQuery.post(ajaxurl, data, function (response) {
         span.html(response);
     });
-    
+
     return false;
 }
 
-jQuery(function() {
+function SetValuesForCurrentFont() {
+    var autopreview = jQuery('#gf_autopreview').is(':checked');
+    if (autopreview) {
+        ShowPreview();
+    }
+}
+
+jQuery(function () {
     SetValuesForCurrentFont();
-    jQuery('#gfonts_list').change(function() {
+    jQuery('#gfonts_list').change(function () {
         SetValuesForCurrentFont();
     });
 });
