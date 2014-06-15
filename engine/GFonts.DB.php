@@ -47,33 +47,23 @@ class GFontsDB {
 		$wpdb->query( $sql );
 	}
 
-	static public function InstallFont( $fontname, $variant, $subsets ) {
+	static public function InstallFont($fontname, $variant, $subsets, $noinstall = false) {
 		global $wpdb;
-		$sql = "SELECT COUNT(*) FROM " . $wpdb->prefix . "gf_fontlist WHERE name = %s";
-		$sqlPrepared = $wpdb->prepare( $sql, $fontname, $variant );
-		$i = $wpdb->get_var( $sqlPrepared );
-		if ( $i == 0 ) {
-			$sql = "INSERT INTO " . $wpdb->prefix . "gf_fontlist(name, variant, subsets, used_in_posts, gfont) VALUES(%s, %s, %s, 0, 1)";
-			$sqlPrepared = $wpdb->prepare(
-				$sql,
-				$fontname,
-				$variant,
-				$subsets
-			);
-			$wpdb->query( $sqlPrepared );
+		$sql = "SELECT COUNT(*) FROM " . $wpdb->prefix . "gf_fontlist WHERE name = %s AND variant = %s";
+		$sqlPrepared = $wpdb->prepare($sql, $fontname, $variant);
+		$i = $wpdb->get_var($sqlPrepared);
+		if ( $i == 0 && ! $noinstall ) {
+				$sql = "INSERT INTO " . $wpdb->prefix . "gf_fontlist(name, variant, subsets, used_in_posts, gfont) VALUES(%s, %s, %s, 0, 1)";
+				$sqlPrepared = $wpdb->prepare($sql, $fontname, $variant, $subsets);
+				$wpdb->query($sqlPrepared);
 			return 0;
-		} else {
-			$sql = "UPDATE " . $wpdb->prefix . "gf_fontlist SET installed = 1, variant = %s, subsets = %s WHERE name = %s";
-			$sqlPrepared = $wpdb->prepare(
-				$sql,
-				$variant,
-				$subsets,
-				$fontname
-			);
-			$wpdb->query( $sqlPrepared );
-			$sql = "SELECT used_in_posts FROM " . $wpdb->prefix . "gf_fontlist WHERE name = %s";
-			$sqlPrepared = $wpdb->prepare( $sql, $fontname, $variant );
-			$i = ( int ) $wpdb->get_var( $sqlPrepared );
+		} else if ( 1 == $i ) {
+			$sql = "UPDATE " . $wpdb->prefix . "gf_fontlist SET installed = 1, subsets = %s WHERE name = %s AND variant = %s";
+			$sqlPrepared = $wpdb->prepare($sql, $subsets, $fontname, $variant);
+			$wpdb->query($sqlPrepared);
+			$sql = "SELECT used_in_posts FROM " . $wpdb->prefix . "gf_fontlist WHERE name = %s AND variant = %s";
+			$sqlPrepared = $wpdb->prepare($sql, $fontname, $variant);
+			$i = (int) $wpdb->get_var($sqlPrepared);
 			return $i;
 		}
 	}

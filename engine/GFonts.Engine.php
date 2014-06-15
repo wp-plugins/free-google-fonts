@@ -94,7 +94,7 @@ class GFontsEngine {
 	static public function AddMenuItem() {
 		$mp = add_menu_page(
 			GFontsEngine::PLUGIN_MENU_TITLE,
-			GFontsEngine::PLUGIN_MENU_NAME, 
+			GFontsEngine::PLUGIN_MENU_NAME,
 			'manage_options', GFontsEngine::PLUGIN_SLUG,
 			array( 'GFontsEngine', 'MainOptions' )
 		);
@@ -369,16 +369,21 @@ class GFontsEngine {
 						if ( isset( $item->kind ) && $item->kind == 'webfonts#webfont' ) {
 							$fontItem = array();
 							$fontItem['name'] = $item->family;
-							if ( $item->family == 'Source Sans Pro' ) {
-								$x = 1;
-							}
-							foreach ( $item->variants as $variant ) {
+								foreach ( $item->variants as $variant ) {
 								$fontItem['variants'][] = $variant;
 							}
 							foreach ( $item->subsets as $subset ) {
 								$fontItem['subsets'][] = $subset;
 							}
 							$fontsArray[] = $fontItem;
+						}
+						foreach ( $fontItem['variants'] as $_variant ) {
+							GFontsDB::InstallFont(
+								$item->family,
+								$_variant,
+								implode( ',', $fontItem['subsets'] ),
+								true
+							);
 						}
 					}
 
