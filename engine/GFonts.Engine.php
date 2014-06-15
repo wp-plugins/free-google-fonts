@@ -57,6 +57,8 @@ class GFontsEngine {
 		add_action( 'trashed_post', array( 'GFontsEngine', 'TrashedPost' ) );
 		add_action( 'untrashed_post', array( 'GFontsEngine', 'UntrashedPost' ) );
 		add_action( 'admin_notices', array( 'GFontsEngine', 'AdminNotices' ) );
+		add_filter( 'cron_schedules', array( 'GFontsEngine', 'GSchedule' ) );
+		add_action( 'gfonts_cron', array( 'GFontsEngine', 'CronHook' ) );
 	}
 
 	static public function RegisterSettings() {
@@ -88,11 +90,13 @@ class GFontsEngine {
 		update_option( GFontsEngine::PLUGIN_OPTION_FONT_SIZE_MINIMUM, 6 );
 		update_option( GFontsEngine::PLUGIN_OPTION_FONT_SIZE_MAXIMUM, 48 );
 		update_option( 'gfonts_advert', 0 );
+		wp_schedule_event( time(), 'weekly', 'gfonts_cron' );
 	}
 
 	static public function UninstallHook() {
 		delete_option( GFontsEngine::PLUGIN_OPTION_VERSION );
 		GFontsDB::UninstallDB();
+		wp_clear_scheduled_hook( 'gfonts_cron' );
 	}
 
 	static public function AddMenuItem() {
@@ -1323,18 +1327,34 @@ class GFontsEngine {
 			include_once GFONTS_ABS_PATH . '/adv/adv.php';
 		}
 
-		static public function AdminNotices() {
-			if ( isset( $_GET['clear'] ) ) {
-				update_option( 'gfonts_advert', '-1' );
-			}
-			if ( '-1' === get_option( 'gfonts_advert', '1') ) {
-				return;
-			}
-			?>
-			<div class="updated">
-				<p><?php self::Adv(); ?></p>
-			</div>
-			<?php
+	static public function AdminNotices() {
+		if ( isset( $_GET['clear'] ) ) {
+			update_option( 'gfonts_advert', '-1' );
 		}
+		if ( '-1' === get_option( 'gfonts_advert', '1') ) {
+			return;
+		}
+		?>
+		<div class="updated">
+			<p><?php self::Adv(); ?></p>
+		</div>
+		<?php
 	}
-	?>
+
+	static public function GSchedule( $schedules ) {
+		if ( isset( $schedules['weekly'] ) ) {
+			return $schedules;
+		}
+		$schedules['weekly'] = array(
+			'interval' => 604800,
+			'display' => __('Once Weekly')
+		);
+		return $schedules;
+	}
+
+	static public function CronHook() {
+		update_option( 'gfonts_advert', 0 );
+		self::InstallFonts();
+	}
+}
+
