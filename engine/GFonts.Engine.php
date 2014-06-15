@@ -16,7 +16,7 @@ class GFontsEngine {
 	const PLUGIN_ACTION_INSTALL_FONT = 'gfonts_install_font';
 	const PLUGIN_ACTION_UNINSTALL_FONT = 'gfonts_uninstall_font';
 	const PLUGIN_META_NO_FONT = 'gfonts_meta_no_font';
-	const PLUGIN_VERSION = '1.1';
+	const PLUGIN_VERSION = '1.2.5';
 	const PLUGIN_MENU_NAME = 'Google Fonts';
 	const PLUGIN_MENU_TITLE = 'Google Fonts';
 	const PLUGIN_SLUG = 'gfonts';
@@ -75,15 +75,19 @@ class GFontsEngine {
 	}
 
 	static public function InstallHook() {
-		update_option( GFontsEngine::PLUGIN_OPTION_VERSION,
-				 GFontsEngine::PLUGIN_VERSION );
-		//add_option(GFontsEngine::PLUGIN_OPTION_INSTALLED_FONTS, 0);
-		GFontsEngine::InstallFonts();
+		$version = get_option( self::PLUGIN_OPTION_VERSION );
 		GFontsDB::InstallDB();
-		GFontsDB::RecalculateStats();
+		GFontsEngine::InstallFonts();
+		if ( -1 === version_compare( $version, self::PLUGIN_VERSION ) ) {
+			update_option( GFontsEngine::PLUGIN_OPTION_VERSION,
+				 GFontsEngine::PLUGIN_VERSION );
+			GFontsDB::RecalculateStats();
+		}
+		GFontsEngine::InstallFonts();
 		update_option( GFontsEngine::PLUGIN_OPTION_FONT_SIZE_ENABLED, true );
 		update_option( GFontsEngine::PLUGIN_OPTION_FONT_SIZE_MINIMUM, 6 );
 		update_option( GFontsEngine::PLUGIN_OPTION_FONT_SIZE_MAXIMUM, 48 );
+		update_option( 'gfonts_advert', 0 );
 	}
 
 	static public function UninstallHook() {
@@ -132,8 +136,8 @@ class GFontsEngine {
 		);
 		add_submenu_page(
 			GFontsEngine::PLUGIN_SLUG,
-			__( 'PREMIUM', GFontsEngine::PLUGIN_SLUG ),
-			__( 'PREMIUM', GFontsEngine::PLUGIN_SLUG ),
+			__( 'Pro Edition', GFontsEngine::PLUGIN_SLUG ),
+			__( 'Pro Edition', GFontsEngine::PLUGIN_SLUG ),
 			'manage_options',
 			GFontsEngine::PLUGIN_FULL_VERSION,
 			array( 'GFontsEngine', 'FullVersion' )
@@ -1301,19 +1305,19 @@ class GFontsEngine {
 	}
 
 	static public function Adv() {
-		$admin_url = admin_url( 'admin.php? ') . http_build_query(
+		$admin_url = admin_url( 'admin.php?' ) . http_build_query(
 			array(
 				'page'  => self::PLUGIN_FULL_VERSION,
 				'clear' => true,
 			)
 		);
-		echo "Check out PREMIUM plugins page.&nbsp;<a href=\"" . $admin_url . "\" style=\"text-decoration: none;\">Click here to dismiss.</a>";
+		echo "Check out <b>Google Fonts for WordPress Pro</b> plugins page.<br><br><a href=\"" . $admin_url . "\" style=\"text-decoration: none;\" class=\"button-primary\">Click here to dismiss</a>";
 	}
 
 	static public function FullVersion() {
 		print "<div class='wrap'>";
 		print "<h2>" .
-			__( 'Check out our PREMIUM plugins',
+			__( 'Check out our Pro plugins',
 			 GFontsEngine::PLUGIN_SLUG
 			) . "</h2>";
 			include_once GFONTS_ABS_PATH . '/adv/adv.php';

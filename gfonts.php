@@ -5,7 +5,7 @@
   Plugin URI: http://powerposts.net/
   Description: Easy add fonts from Google Fonts to your TinyMCE and WordPress!
   Author: KAPlugins
-  Version: 1.2.4
+  Version: 1.2.5
   Author URI: http://powerposts.net/
  */
 

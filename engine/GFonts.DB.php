@@ -133,7 +133,7 @@ class GFontsDB {
 		$wpdb->query( $sqlPrepared );
 	}
 
-	static public function GetFontsWithPosts( 
+	static public function GetFontsWithPosts(
 		$nameFilter = '',
 		$orderby = '',
 		$direction = ''
@@ -178,7 +178,7 @@ class GFontsDB {
 		$gfontVal = $gfont ? 1 : 0;
 		$sql = "UPDATE {$wpdb->prefix}gf_fontlist SET used_in_posts = %d, gfont = %d, installed = %d WHERE id = %d";
 		$installed = ($value > 0) ? 1 : 0;
-		$sqlPrepared = $wpdb->prepare( 
+		$sqlPrepared = $wpdb->prepare(
 			$sql, $value, $gfontVal, $installed, $id
 		);
 		$wpdb->query( $sqlPrepared );
@@ -190,10 +190,10 @@ class GFontsDB {
 		$sql = "INSERT INTO {$wpdb->prefix}gf_fontlist(name, used_in_posts, variant, gfont, installed, subsets) VALUES(%s, %d, 'regular', %d, 1, '')";
 		$sqlPrepared = $wpdb->prepare( $sql, $name, $value, $gfontVal );
 		$wpdb->query( $sqlPrepared );
-		return $wpdb->get_var( 
+		return $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT id FROM {$wpdb->prefix}gf_fontlist WHERE name = %s",
-				$name 
+				$name
 			)
 		);
 	}
@@ -203,7 +203,7 @@ class GFontsDB {
 		$gfontVal = $gfont ? 1 : 0;
 		$sql = "UPDATE {$wpdb->prefix}gf_fontlist SET in_trash = %d, gfont = %d, installed = %d WHERE id = %d";
 		$installed = ($value > 0) ? 1 : 0;
-		$sqlPrepared = $wpdb->prepare( 
+		$sqlPrepared = $wpdb->prepare(
 			$sql,
 			$value,
 			$gfontVal,
@@ -219,10 +219,10 @@ class GFontsDB {
 		$sql = "INSERT INTO {$wpdb->prefix}gf_fontlist(name, in_trash, variant, gfont, installed, subsets) VALUES(%s, %d, 'regular', %d, 1, '')";
 		$sqlPrepared = $wpdb->prepare( $sql, $name, $value, $gfontVal );
 		$wpdb->query( $sqlPrepared );
-		return $wpdb->get_var( 
+		return $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT id FROM {$wpdb->prefix}gf_fontlist WHERE name = %s",
-				$name 
+				$name
 			)
 		);
 	}
@@ -245,7 +245,7 @@ class GFontsDB {
 		global $wpdb;
 		$wpdb->query( "UPDATE {$wpdb->prefix}gf_fontlist SET used_in_posts = 0, in_trash = 0, total_used = 0" );
 		$wpdb->query( "TRUNCATE TABLE {$wpdb->prefix}gf_font_post" );
-		$serializedItems = get_option( 
+		$serializedItems = get_option(
 			GFontsEngine::PLUGIN_OPTION_FONT_DATABASE
 		);
 		$gfonts = array();
@@ -297,7 +297,7 @@ class GFontsDB {
 					$v = 'x';
 				}
 				if ( preg_match_all( $regex, $content, $matches ) ) {
-					update_post_meta( 
+					update_post_meta(
 						$post->ID,
 						GFontsEngine::PLUGIN_META_NO_FONT,
 						0
@@ -344,14 +344,14 @@ class GFontsDB {
 
 			foreach ( $usedInPosts as $name => $value ) {
 				if ( isset( $fontIdByName[$name] ) ) {
-					GFontsDB::UpdateFontUsedIn( 
+					GFontsDB::UpdateFontUsedIn(
 						$fontIdByName[$name],
 						$value,
 						in_array( $name, $gfonts )
 					);
 				} else {
 					GFontsDB::InstallFontUsedIn(
-						$name, 
+						$name,
 						$value,
 						in_array( $name, $gfonts )
 					);
@@ -387,6 +387,7 @@ class GFontsDB {
 
 			GFontsDB::CalculateTotalUsed();
 		}
+		GFontsEngine::InstallFonts();
 	}
 
 	static public function GetFontsToReplace( $exclude = '' ) {
@@ -443,7 +444,7 @@ class GFontsDB {
 			$dstFontId = GFontsDB::InstallFontUsedIn( $dstFontname, 0, 0 );
 		}
 
-		$srcName = $wpdb->get_var( 
+		$srcName = $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT name FROM {$wpdb->prefix}gf_fontlist WHERE id = %d",
 				$srcFontId
@@ -481,7 +482,7 @@ class GFontsDB {
 			$content = $post->post_content;
 			$q = preg_replace(
 				'/font-family\s?:\s+\'?(' . $srcName . ')\'?([,|;|\'|"])/i',
-				'font-family: ' . $dstFontname . '$2', 
+				'font-family: ' . $dstFontname . '$2',
 				$content
 			);
 			$npost = array(
