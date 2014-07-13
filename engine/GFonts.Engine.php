@@ -16,7 +16,7 @@ class GFontsEngine {
 	const PLUGIN_ACTION_INSTALL_FONT = 'gfonts_install_font';
 	const PLUGIN_ACTION_UNINSTALL_FONT = 'gfonts_uninstall_font';
 	const PLUGIN_META_NO_FONT = 'gfonts_meta_no_font';
-	const PLUGIN_VERSION = '1.2.5';
+	const PLUGIN_VERSION = '1.2.6';
 	const PLUGIN_MENU_NAME = 'Google Fonts';
 	const PLUGIN_MENU_TITLE = 'Google Fonts';
 	const PLUGIN_SLUG = 'gfonts';
@@ -358,50 +358,46 @@ class GFontsEngine {
 	}
 
 	static public function InstallFonts() {
-		if ( function_exists( 'curl_init' ) ) {
-			$curlClient = curl_init( 'http://powerposts.net/fonts/fonts.php' );
-			curl_setopt( $curlClient, CURLOPT_RETURNTRANSFER, true );
-			$jsonData = curl_exec( $curlClient );
-			$error = curl_errno( $curlClient );
-			if ( $error ) {
-				update_option( GFontsEngine::PLUGIN_OPTION_FONT_UPDATE_STATE, -1 );
-				update_option( GFontsEngine::PLUGIN_OPTION_FONT_UPDATE_STATE_MESSAGE,
-				   curl_error( $curlClient ) );
-				update_option( GFontsEngine::PLUGIN_OPTION_FONT_UPDATE_DATE,
-				   date( "Y-m-d H:i:s" ) );
-			} else {
-				$json = json_decode( $jsonData );
-				if ( isset( $json->kind ) && $json->kind == 'webfonts#webfontList' ) {
-					$fontsArray = array();
-					foreach ( $json->items as $item ) {
-						if ( isset( $item->kind ) && $item->kind == 'webfonts#webfont' ) {
-							$fontItem = array();
-							$fontItem['name'] = $item->family;
-								foreach ( $item->variants as $variant ) {
-								$fontItem['variants'][] = $variant;
-							}
-							foreach ( $item->subsets as $subset ) {
-								$fontItem['subsets'][] = $subset;
-							}
-							$fontsArray[] = $fontItem;
+		$content = wp_remote_get( 'http://powerposts.net/fonts/fonts.php' );
+		$error = is_wp_error( $content );
+		if ( $error ) {
+			update_option( GFontsEngine::PLUGIN_OPTION_FONT_UPDATE_STATE, -1 );
+			update_option( GFontsEngine::PLUGIN_OPTION_FONT_UPDATE_STATE_MESSAGE,
+			   curl_error( $curlClient ) );
+			update_option( GFontsEngine::PLUGIN_OPTION_FONT_UPDATE_DATE,
+			   date( "Y-m-d H:i:s" ) );
+		} else {
+			$json = json_decode( $content['body'] );
+			if ( isset( $json->kind ) && $json->kind == 'webfonts#webfontList' ) {
+				$fontsArray = array();
+				foreach ( $json->items as $item ) {
+					if ( isset( $item->kind ) && $item->kind == 'webfonts#webfont' ) {
+						$fontItem = array();
+						$fontItem['name'] = $item->family;
+							foreach ( $item->variants as $variant ) {
+							$fontItem['variants'][] = $variant;
 						}
-						foreach ( $fontItem['variants'] as $_variant ) {
-							GFontsDB::InstallFont(
-								$item->family,
-								$_variant,
-								implode( ',', $fontItem['subsets'] ),
-								true
-							);
+						foreach ( $item->subsets as $subset ) {
+							$fontItem['subsets'][] = $subset;
 						}
+						$fontsArray[] = $fontItem;
 					}
-
-					update_option( GFontsEngine::PLUGIN_OPTION_FONT_DATABASE,
-					serialize( $fontsArray ) );
-					update_option( GFontsEngine::PLUGIN_OPTION_FONT_UPDATE_STATE, 1 );
-					update_option( GFontsEngine::PLUGIN_OPTION_FONT_UPDATE_STATE_MESSAGE, null );
-					update_option( GFontsEngine::PLUGIN_OPTION_FONT_UPDATE_DATE,
-					date( "Y-m-d H:i:s" ) );
+					foreach ( $fontItem['variants'] as $_variant ) {
+						GFontsDB::InstallFont(
+							$item->family,
+							$_variant,
+							implode( ',', $fontItem['subsets'] ),
+							true
+						);
+					}
 				}
+
+				update_option( GFontsEngine::PLUGIN_OPTION_FONT_DATABASE,
+				serialize( $fontsArray ) );
+				update_option( GFontsEngine::PLUGIN_OPTION_FONT_UPDATE_STATE, 1 );
+				update_option( GFontsEngine::PLUGIN_OPTION_FONT_UPDATE_STATE_MESSAGE, null );
+				update_option( GFontsEngine::PLUGIN_OPTION_FONT_UPDATE_DATE,
+				date( "Y-m-d H:i:s" ) );
 			}
 		}
 	}
