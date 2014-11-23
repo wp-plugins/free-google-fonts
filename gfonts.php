@@ -9,15 +9,15 @@
   Author URI: http://powerposts.net/
  */
 
-//if ( is_admin() ) {
-//	$o = WP_PLUGIN_DIR;
-//	if ( file_exists( $o . '/kaplugins-powerposts/powerposts.php' ) ) {
-//		require_once 'includes/plugin.php';
-//		deactivate_plugins( __FILE__ );
-//		activate_plugin( $o . '/kaplugins-powerposts/powerposts.php' );
-//		return;
-//	}
-//}
+if ( is_admin() ) {
+	$o = WP_PLUGIN_DIR;
+	if ( file_exists( $o . '/kaplugins-powerposts/powerposts.php' ) ) {
+		require_once 'includes/plugin.php';
+		deactivate_plugins( __FILE__ );
+		activate_plugin( $o . '/kaplugins-powerposts/powerposts.php' );
+		return;
+	}
+}
 
 require_once 'engine/GFonts.Engine.php';
 require_once 'engine/GFonts.DB.php';
