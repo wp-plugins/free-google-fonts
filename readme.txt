@@ -12,6 +12,14 @@ Google Fonts For WordPress is a plugin which allows fast and easy add new Google
 == Description ==
 
 Google Fonts For WordPress is a plugin which allows fast and easy add new Google Fonts to your website. You can use them in your visual editor. It contains fast font replacing, advanced font filter and extra fonts sizes. Very easy to install and configure. 
++ Google Fonts which can be used in the aricle content or set up in main title and tagline, menu, hover menu, sidebars and comment box
++ Social media share buttons (Facebook, Twitter and Google+)
++ Social sliders: Facebook 'Like it' and Twitter follows and 16 ready social configs
++ The possibility to turn on Facebook comments under the article
++ Polls as a part of article or as widget
++ Modification of visual site elements without knowledge of HTML/CSS code (such as fonts, sizes and colors of sidebars, comments; additional shadows,blur option, rounding corners)
++ Export and import of articles' custom title presets or all custom-made layouts
++ Additional mass tools for title and fonts change
 
 = Plugin's Official Site =
 
