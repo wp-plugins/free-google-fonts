@@ -6715,7 +6715,7 @@ class GFontsEngine {
         <h2>Commercial usage</h2>
         <h3>
             This software is released under GNU General Public License. You can use it in any commercial or non-commercial work.<br/>
-            This free plugin doesn't have any support and only purchased licenses are supported. If you want to purchase one please <a href='http://goo.gl/KLd0dT'>follow this link.</a><br/>
+            This free plugin doesn't have any support and only purchased licenses are supported. If you want to purchase one please <a href='http://goo.gl/cZiwCd'>follow this link.</a><br/>
             <br/><center>Please check my other product:</center>
         </h3>
         <?php
