@@ -7,7 +7,7 @@ Tested up to: 4.0
 Stable tag: 2.0.1
 License: GPLv2
 
-Google Fonts For WordPress is a plugin which allows fast and easy add new Google Fonts to your website. It also allows you to modify your theme as you wish - you can create custom titles, comments, add voting polls etc.
+This plugin which allows fast and easy add new Google Fonts to your website, modify your theme as you wish - can create custom titles, comments etc.
 
 == Description ==
 
