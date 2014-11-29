@@ -7,7 +7,7 @@ Tested up to: 4.0
 Stable tag: 2.0.1
 License: GPLv2
 
-This plugin which allows fast and easy add new Google Fonts to your website, modify your theme as you wish - can create custom titles, comments etc.
+This plugin which allows fast and easy add new Google Fonts to your website, modify your theme as you wish - create custom titles, comments etc.
 
 == Description ==
 
