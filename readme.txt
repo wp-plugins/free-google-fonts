@@ -1,7 +1,7 @@
 === Google Fonts For WordPress ===
 Contributors: KAPlugins
 Donate link: http://powerposts.net/downloads/google-fonts-for-wordpress-pro/
-Tags: fonts, Google Fonts WordPress, google webfonts, Theme Fonts, Theme Fonts Plugin, typography, webfonts, WordPress Fonts, WordPress Google Fonts Plugin, WordPress Webfonts, CSS, design, font, free fonts, google, Google fonts, typography, add fonts, CSS, manage fonts, site style, style sheet, styles, stylesheet, typography, Font Manager, font tools, tools, font replace, font replacing, font plugin
+Tags: fonts, Google Fonts WordPress, google webfonts, Theme Fonts, Theme Fonts Plugin, typography, webfonts, WordPress Fonts, WordPress Google Fonts Plugin, WordPress Webfonts, voting polls, facebook, twitter, facebook comments, theme customization, wordpress customization, design, font, free fonts, google, Google fonts, typography, add fonts, CSS, manage fonts, site style, style sheet, styles, stylesheet, typography, Font Manager, font tools, tools, font replace, font replacing, font plugin
 Requires at least: 3.6
 Tested up to: 4.0
 Stable tag: 2.0.1
