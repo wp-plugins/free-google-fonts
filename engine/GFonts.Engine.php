@@ -89,6 +89,7 @@ class GFontsEngine {
     const PLUGIN_OPTION_SOCIAL_SLIDER_TWITTER_SHEADER              = 'gfonts_social_tw_slider_footer';
     const PLUGIN_OPTION_SOCIAL_SLIDER_TWITTER_BUTTON_MARGIN        = 'gfonts_social_tw_slider_bt_margin';
     const PLUGIN_FULL_VERSION                                      = 'gfonts_fv';
+    const PLUGIN_CONTACT                                           = 'gfonts_contact';
 
     public static $changeTitle        = false;
     public static $defaultTitlePreset = false;
@@ -98,6 +99,7 @@ class GFontsEngine {
     public static $navMenuBegin       = false;
     public static $navMenuClass       = null;
     public static $editLoaded         = false;
+    public static $titleCustomized    = false;
 
     public function Run( $file ) {
         if ( isset( $_GET['page'] ) && 'gf_help' === $_GET['page'] ) {
@@ -186,7 +188,7 @@ class GFontsEngine {
             add_action( 'wp_ajax_mass_answers', array( 'GFontsEngine', 'AddMassAnswers' ) );
             add_action( 'widgets_init', array( 'GFontsEngine', 'RegisterWidgets' ) );
             add_action( 'wp_ajax_nopriv_poll_vote', array( 'GFontsEngine', 'PollVote' ) );
-            add_action( 'wp_head', array( 'GFontsEngine', 'WpHead' ) );
+            add_action( 'wp_head', array( 'GFontsEngine', 'WpHead' ), PHP_INT_MAX );
             add_action( 'init', array( 'GFontsEngine', 'RegisterShortCodes' ) );
             add_action( 'wp_ajax_gf_load_poll_wizard', array( 'GFontsEngine', 'AjaxLoadPollWizard' ) );
             add_action( 'wp_ajax_new_poll', array( 'GFontsEngine', 'AddNewPollFromWizard' ) );
@@ -310,6 +312,7 @@ class GFontsEngine {
     static public function AddMenuItem() {
         $mp = add_menu_page( self::PLUGIN_MENU_TITLE, self::PLUGIN_MENU_NAME, 'manage_options', self::PLUGIN_FULL_VERSION, array( 'GFontsEngine', 'FullVersion' ) );
         add_submenu_page( self::PLUGIN_FULL_VERSION, __( 'Commercial Usage', self::PLUGIN_SLUG ), __( 'Commercial Usage', self::PLUGIN_SLUG ), 'manage_options', self::PLUGIN_FULL_VERSION, array( 'GFontsEngine', 'FullVersion' ) );
+        add_submenu_page( self::PLUGIN_FULL_VERSION, __( 'Contact', self::PLUGIN_SLUG ), __( 'Contact', self::PLUGIN_SLUG ), 'manage_options', self::PLUGIN_CONTACT, array( 'GFontsEngine', 'AuthorContact' ) );
         add_submenu_page( self::PLUGIN_FULL_VERSION, __( 'Fonts', self::PLUGIN_SLUG ), __( 'Fonts', self::PLUGIN_SLUG ), 'manage_options', self::PLUGIN_SLUG, array( 'GFontsEngine', 'MainOptions' ) );
         add_submenu_page( self::PLUGIN_FULL_VERSION, __( 'Title Presets & Tools', self::PLUGIN_SLUG ), __( 'Title Presets & Tools', self::PLUGIN_SLUG ), 'manage_options', self::PLUGIN_CUSTOM_TITLE_PRESETS, array( 'GFontsEngine', 'CustomTitlePresets' ) );
         add_submenu_page( self::PLUGIN_FULL_VERSION, __( 'Social Settings', self::PLUGIN_SLUG ), __( 'Social Settings', self::PLUGIN_SLUG ), 'manage_options', self::PLUGIN_SOCIAL_BUTTONS_SETTINGS, array( 'GFontsEngine', 'SocialSettings' ) );
@@ -906,6 +909,11 @@ class GFontsEngine {
     }
 
     static public function InstallOrUninstallFont( $install ) {
+        $count = GFontsDB::CountFonts();
+        if ( $install && $count >= 10 ) {
+            echo '<span style="color: red;">' . __( 'You can install maximum 10 fonts with Free Version. If you need more please purchase PRO. <a href="http://powerposts.net" target="_blank" >Click here for PRO</a>', self::PLUGIN_SLUG ) . '</span>';
+            die();
+        }
         $serializedItems = get_option( self::PLUGIN_OPTION_FONT_DATABASE );
         if ( !$serializedItems ) {
             echo '<span style="color: red;">' . __( 'Could not find font list. Consider updating database?', self::PLUGIN_SLUG ) . '</span>';
@@ -3616,6 +3624,7 @@ class GFontsEngine {
             $style6 = self::ThemeCommentBoxSubmitCustomization();
             $style7 = self::ThemeSidebarsCustomization();
         }
+        self::$titleCustomized = ( 'font-weight: normal!important; font-style: normal!important; text-decoration: none!important; ' !== $style );
         //print ".site-title, #site-title, .site-title a, #site-title a {" . $style . "; padding: 0;}\r\n";
         print ".gftitle_customized {" . $style . "}\r\n";
         print ".gfdescription_customized {" . $style2 . "}\r\n";
@@ -4342,7 +4351,7 @@ class GFontsEngine {
     }
 
     static public function ContentFilterProcessor( $content ) {
-        $wmode = get_option( self::PLUGIN_OPTION_SOCIAL_BUTTONS_GLOBAL_SETTING, 1 );
+        $wmode = get_option( self::PLUGIN_OPTION_SOCIAL_BUTTONS_GLOBAL_SETTING, 3 );
         if ( is_single() && ($wmode < 3) ) {
             $id = get_the_ID();
             if ( $id ) {
@@ -4451,7 +4460,7 @@ class GFontsEngine {
         $fb_color   = get_option( self::PLUGIN_OPTION_SOCIAL_BUTTONS_FB_COLOR, 'blue' );
         $tw_color   = get_option( self::PLUGIN_OPTION_SOCIAL_BUTTONS_TW_COLOR, 'white_blue' );
         $gp_color   = get_option( self::PLUGIN_OPTION_SOCIAL_BUTTONS_GP_COLOR, 'red' );
-        $wmode      = get_option( self::PLUGIN_OPTION_SOCIAL_BUTTONS_GLOBAL_SETTING, 1 );
+        $wmode      = get_option( self::PLUGIN_OPTION_SOCIAL_BUTTONS_GLOBAL_SETTING, 3 );
         $enabled_fb = get_option( self::PLUGIN_OPTION_SOCIAL_BUTTONS_FACEBOOK, true );
         $enabled_tw = get_option( self::PLUGIN_OPTION_SOCIAL_BUTTONS_TWITTER, true );
         $enabled_gp = get_option( self::PLUGIN_OPTION_SOCIAL_BUTTONS_GOOGLEPLUS, true );
@@ -4939,7 +4948,12 @@ class GFontsEngine {
         wp_register_script( 'gf-poll-edit', PLUGIN_URL . "js/gf-poll-edit.js" );
         wp_enqueue_script( 'gf-poll-edit' );
         $id = (isset( $_GET['id'] )) ? $_GET['id'] : -1;
-        if ( $id == -1 ) {
+        $poll_count = GFontsDB::CountPolls();
+        if ( $id === -1 && $poll_count >= 5 ) {
+            echo '<span style="color: red;">' . __( 'You can create maximum 5 polls with Free Version. If you need more please purchase PRO. <a href="http://powerposts.net" target="_blank" >Click here for PRO</a>', self::PLUGIN_SLUG ) . '</span>';
+            return;
+        }
+        if ( $id === -1 ) {
             $pollname        = "";
             $polltitle       = "";
             $polltype        = "0";
@@ -5451,6 +5465,7 @@ class GFontsEngine {
     static public function BlognameOption( $value ) {
         if (
             self::$wpHeadSent &&
+            self::$titleCustomized &&
             !empty( $value )
         ) {
             $value             = '<span class="gftitle_customized">' . $value . "</span>";
@@ -5497,11 +5512,9 @@ class GFontsEngine {
     }
 
     static public function WpCustomization() {
-        //if (isset($_POST['wp_customize'])) {
         add_filter( 'pre_option_blogname', array( 'GFontsEngine', 'BlognamePreOption' ), 10000, 1 );
         add_filter( 'pre_option_blogdescription', array( 'GFontsEngine', 'BlogdescriptionPreOption' ), 10000, 1 );
         wp_enqueue_script( 'kaplugins-customizer', PLUGIN_URL . 'js/wp-customizer.js', array( 'customize-preview' ), time(), true );
-        //}
     }
 
     static public function NavigationMenuBegin( $args ) {
@@ -6721,6 +6734,16 @@ class GFontsEngine {
         <?php
         include_once GFONTS_ABS_PATH . '/adv/adv.php';
         print "</div>";
+    }
+
+    static public function AuthorContact() {
+        ?>
+        <div class="wrap">
+            <h2>Business inquiries</h2>
+            <h3>Plugin Support URL: https://wordpress.org/support/plugin/free-google-fonts</h3>
+            <p>Business inquiries are welcome at: lukasz@pawlik.it</p>
+        </div>
+        <?php
     }
 
 }

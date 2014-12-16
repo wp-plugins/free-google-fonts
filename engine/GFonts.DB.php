@@ -1506,4 +1506,16 @@ class GFontsDB {
 		}
 	}
 
+    static public function CountFonts() {
+		global $wpdb;
+		$sql = $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}gf_fontlist WHERE installed = %d AND gfont = %d", 1, 1);
+		return $wpdb->get_var($sql);
+	}
+
+    static public function CountPolls() {
+		global $wpdb;
+		$sql = $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}gf_polls", 1, 1);
+		return $wpdb->get_var($sql);
+	}
+
 }

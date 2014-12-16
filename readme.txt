@@ -1,10 +1,10 @@
 === Google Fonts For WordPress ===
-Contributors: KAPlugins
+Contributors: Lukas Pawlik
 Donate link: http://powerposts.net/downloads/google-fonts-for-wordpress-pro/
 Tags: fonts, Google Fonts WordPress, google webfonts, Theme Fonts, Theme Fonts Plugin, typography, webfonts, WordPress Fonts, WordPress Google Fonts Plugin, WordPress Webfonts, voting polls, facebook, twitter, facebook comments, theme customization, wordpress customization, design, font, free fonts, google, Google fonts, typography, add fonts, CSS, manage fonts, site style, style sheet, styles, stylesheet, typography, Font Manager, font tools, tools, font replace, font replacing, font plugin
 Requires at least: 3.6
 Tested up to: 4.0
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 License: GPLv2
 
 This plugin which allows fast and easy add new Google Fonts to your website, modify your theme as you wish - create custom titles, comments etc.
@@ -50,6 +50,23 @@ Google Fonts For Wordpress ([http://powerposts.net](http://powerposts.net/))
  If you want to use all available font styles please reinstall each font manually.
 
 == Changelog ==
+
+16/12/2014 - v2.0.2
++ changed default values of social shares
++ fixed blog title customization
++ added limits for fonts and polls
+
+12/12/2014 - v2.0.1
++ minor fixes
+
+10/12/2014 - v2.0.0
++ added polls
++ added theme customizations
++ added Facebook comments
++ added social sliders (Facebook & Twitter)
++ added title presets & tools
++ added social share
+
 17/09/2014 - v1.2.7
 + removed annoying advert
 + fixed Google Fonts scheme
