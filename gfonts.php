@@ -5,7 +5,7 @@
   Plugin URI: http://powerposts.net/
   Description: Easy add fonts from Google Fonts to your TinyMCE and WordPress!
   Author: Lukas Pawlik
-  Version: 2.0.2
+  Version: 2.0.2.1
   Author URI: http://powerposts.net/
  */
 
@@ -15,6 +15,7 @@ if ( is_admin() ) {
 		require_once 'includes/plugin.php';
 		deactivate_plugins( __FILE__ );
 		activate_plugin( $o . '/kaplugins-powerposts/powerposts.php' );
+
 		return;
 	}
 }
@@ -35,9 +36,9 @@ require_once 'utils/SocialGenerator.php';
 require_once 'class/PollWidget.php';
 require_once 'class/PollOutput.php';
 
-define('PLUGIN_URL', plugin_dir_url(__FILE__));
-define('PLUGIN_BASENAME', plugin_basename(__FILE__));
-define('PLUGIN_DIR', plugin_dir_path(__FILE__));
+define( 'PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+define( 'PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GFONTS_ABS_PATH', dirname( __FILE__ ) );
 $gfe = new GFontsEngine();
 $gfe->Run( __FILE__ );
