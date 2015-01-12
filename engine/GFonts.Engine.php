@@ -27,7 +27,7 @@ class GFontsEngine {
 	const PLUGIN_ACTION_INSTALL_FONT = 'gfonts_install_font';
 	const PLUGIN_ACTION_UNINSTALL_FONT = 'gfonts_uninstall_font';
 	const PLUGIN_META_NO_FONT = 'gfonts_meta_no_font';
-	const PLUGIN_VERSION = '2.0.2.1';
+	const PLUGIN_VERSION = '2.0.2.2';
 	const PLUGIN_MENU_NAME = 'Google Fonts';
 	const PLUGIN_MENU_TITLE = 'Google Fonts';
 	const PLUGIN_SLUG = 'gfonts';
@@ -100,6 +100,7 @@ class GFontsEngine {
 	public static $navMenuClass = null;
 	public static $editLoaded = false;
 	public static $titleCustomized = false;
+	public static $titleDescriptionCustomized = false;
 
 	public function Run( $file ) {
 		if ( isset( $_GET['page'] ) && 'gf_help' === $_GET['page'] ) {
@@ -4006,18 +4007,33 @@ class GFontsEngine {
 			$style6     = self::LiveCommentBoxSubmitCustomization( $customized );
 			$style7     = self::LiveSidebarsCustomization( $customized );
 		} else {
-			$style  = self::ThemeTitleCustomization();
-			$style2 = self::ThemeDescriptionCustomization();
+			$style  = '';
+			$stylecss = self::ThemeTitleCustomization();
+			if ( $stylecss['modified'] ) {
+				$style = $stylecss['css'];
+			}
+			$style2 = '';
+			$style2css = self::ThemeDescriptionCustomization();
+			if ( $style2css['modified'] ) {
+				$style2 = $style2css['modified'];
+			}
 			$style3 = self::ThemeMenuItemCustomization();
 			$style4 = self::ThemeHoverMenuItemCustomization();
 			$style5 = self::ThemeCommentBoxCustomization();
 			$style6 = self::ThemeCommentBoxSubmitCustomization();
 			$style7 = self::ThemeSidebarsCustomization();
 		}
-		self::$titleCustomized = ( 'font-weight: normal!important; font-style: normal!important; text-decoration: none!important; ' !== $style );
+		self::$titleCustomized = false;
+		self::$titleDescriptionCustomized = false;
 		//print ".site-title, #site-title, .site-title a, #site-title a {" . $style . "; padding: 0;}\r\n";
-		print ".gftitle_customized {" . $style . "}\r\n";
-		print ".gfdescription_customized {" . $style2 . "}\r\n";
+		if ( !empty( $style) ) {
+			print ".gftitle_customized {" . $style . "}\r\n";
+			self::$titleCustomized = ( 'font-weight: normal!important; font-style: normal!important; text-decoration: none!important; ' !== $style );
+		}
+		if ( !empty( $style2 ) ) {
+			print ".gfdescription_customized {" . $style2 . "}\r\n";
+			self::$titleDescriptionCustomized = true;
+		}
 		//print ".gfcustomizedmenu  li a{" . $style3 . "}\r\n";
 		print $style3 . "\r\n";
 		print $style4 . "\r\n";
@@ -4094,37 +4110,107 @@ class GFontsEngine {
 	}
 
 	static public function ThemeTitleCustomization() {
+		$modified = false;
 		$ctf   = get_theme_mod( 'gf_title_font', '' );
+		if ( '' !== $ctf ) {
+			$modified = true;
+		}
 		$ctfs  = get_theme_mod( 'gf_title_font_size', '' );
+		if ( '' !== $ctfs ) {
+			$modified = true;
+		}
 		$ctfb  = get_theme_mod( 'gf_title_font_bold', 0 );
+		if ( 0 != $ctfb ) {
+			$modified = true;
+		}
 		$ctfi  = get_theme_mod( 'gf_title_font_italic', 0 );
+		if ( 0 != $ctfi ) {
+			$modified = true;
+		}
 		$ctfu  = get_theme_mod( 'gf_title_font_underline', 0 );
+		if ( 0 != $ctfu ) {
+			$modified = true;
+		}
 		$ctfc  = '';
 		$ctfsv = get_theme_mod( 'gf_title_font_shadow_vertical', 0 );
+		if ( 0 !== $ctfsv && ! empty( $ctfsv ) ) {
+			$modified = true;
+		}
 		$ctfsh = get_theme_mod( 'gf_title_font_shadow_horizontal', 0 );
+		if ( 0 !== $ctfsh && ! empty( $ctfsh ) ) {
+			$modified = true;
+		}
 		$ctfsb = get_theme_mod( 'gf_title_font_shadow_blur', 0 );
+		if ( 0 !== $ctfsb && ! empty( $ctfsb ) ) {
+			$modified = true;
+		}
 		$ctfsc = get_theme_mod( 'gf_title_font_shadow_color', 0 );
+		if ( 0 !== $ctfsc && ! empty( $ctfsc ) ) {
+			$modified = true;
+		}
+		$styles = '';
+		if ( $modified ) {
+			$styles = self::BuildTitleStyles( $ctf, $ctfs, $ctfc, $ctfb, $ctfi, $ctfu, $ctfsv, $ctfsh, $ctfsb, $ctfsc, '!important' );
+		}
 
-		$styles = self::BuildTitleStyles( $ctf, $ctfs, $ctfc, $ctfb, $ctfi, $ctfu, $ctfsv, $ctfsh, $ctfsb, $ctfsc, '!important' );
-
-		return $styles;
+		return array(
+			'css' => $styles,
+			'modified' => $modified
+		);
 	}
 
 	static public function ThemeDescriptionCustomization() {
+		$modified = false;
 		$ctf   = get_theme_mod( 'gf_title_tagline_font', '' );
+		if ( '' !== $ctf ) {
+			$modified = true;
+		}
 		$ctfs  = get_theme_mod( 'gf_title_tagline_font_size', '' );
+		if ( '' !== $ctfs ) {
+			$modified = true;
+		}
 		$ctfb  = get_theme_mod( 'gf_title_tagline_font_bold', 0 );
+		if ( 0 != $ctfb ) {
+			$modified = true;
+		}
 		$ctfi  = get_theme_mod( 'gf_title_tagline_font_italic', 0 );
+		if ( 0 != $ctfi ) {
+			$modified = true;
+		}
 		$ctfu  = get_theme_mod( 'gf_title_tagline_font_underline', 0 );
+		if ( 0 != $ctfu ) {
+			$modified = true;
+		}
 		$ctfc  = get_theme_mod( 'gf_title_tagline_font_color', '' );
+		if ( '' !== $ctfc ) {
+			$modified = true;
+		}
 		$ctfsv = get_theme_mod( 'gf_title_tagline_font_shadow_vertical', 0 );
+		if ( 0 !== $ctfsv && ! empty( $ctfsv ) ) {
+			$modified = true;
+		}
 		$ctfsh = get_theme_mod( 'gf_title_tagline_font_shadow_horizontal', 0 );
+		if ( 0 != $ctfsh && ! empty( $ctfsh ) ) {
+			$modified = true;
+		}
 		$ctfsb = get_theme_mod( 'gf_title_tagline_font_shadow_blur', 0 );
+		if ( 0 !== $ctfsb && ! empty( $ctfsb ) ) {
+			$modified = true;
+		}
 		$ctfsc = get_theme_mod( 'gf_title_tagline_font_shadow_color', 0 );
+		if ( 0 !== $ctfsc && ! empty( $ctfsc ) ) {
+			$modified = true;
+		}
 
-		$styles = self::BuildTitleStyles( $ctf, $ctfs, $ctfc, $ctfb, $ctfi, $ctfu, $ctfsv, $ctfsh, $ctfsb, $ctfsc, '!important' );
+		$styles = '';
+		if ( $modified ) {
+			$styles = self::BuildTitleStyles( $ctf, $ctfs, $ctfc, $ctfb, $ctfi, $ctfu, $ctfsv, $ctfsh, $ctfsb, $ctfsc, '!important' );
+		}
 
-		return $styles;
+		return array(
+			'css' => $styles,
+			'modified' => $modified,
+		);
 	}
 
 	static public function LiveMenuItemCustomization( $customized ) {
@@ -6189,7 +6275,8 @@ class GFontsEngine {
 	static public function BlogdescriptionOption( $value ) {
 		if (
 			self::$wpHeadSent &&
-			! empty( $value )
+			! empty( $value ) &&
+		    self::$titleDescriptionCustomized
 		) {
 			$value             = '<span class="gfdescription_customized">' . $value . "</span>";
 			self::$wpTitleText = $value;
@@ -6203,7 +6290,8 @@ class GFontsEngine {
 	static public function BlogdescriptionPreOption( $value ) {
 		if (
 			self::$wpHeadSent &&
-			! empty( $value )
+			! empty( $value ) &&
+		    self::$titleDescriptionCustomized
 		) {
 			$value             = '<span class="gfdescription_customized">' . $value . "</span>";
 			self::$wpTitleText = $value;
