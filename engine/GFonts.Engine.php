@@ -2834,7 +2834,6 @@ class GFontsEngine {
 	static public function ThemeCustomizator( $wp_customize ) {
 
 		require_once PLUGIN_DIR . '/class/GFonts.CustomizeControl.TextArea.php';
-
 		$wp_customize->add_setting( 'gf_title_font', array( 'default' => '' ) );
 		$wp_customize->add_setting( 'gf_title_font_size', array( 'default' => '' ) );
 		$wp_customize->add_setting( 'gf_title_font_bold', array( 'default' => 0 ) );
@@ -4015,7 +4014,7 @@ class GFontsEngine {
 			$style2 = '';
 			$style2css = self::ThemeDescriptionCustomization();
 			if ( $style2css['modified'] ) {
-				$style2 = $style2css['modified'];
+				$style2 = $style2css['css'];
 			}
 			$style3 = self::ThemeMenuItemCustomization();
 			$style4 = self::ThemeHoverMenuItemCustomization();
@@ -4058,24 +4057,24 @@ class GFontsEngine {
 
 	static public function LiveTitleCustomization( $customized ) {
 		$ctf   = isset( $customized->gf_title_font ) ? $customized->gf_title_font
-			: '';
+			: get_theme_mod( 'gf_title_font' );
 		$ctfs  = isset( $customized->gf_title_font_size ) ? $customized->gf_title_font_size
-			: '';
+			: get_theme_mod( 'gf_title_font_size' );
 		$ctfb  = isset( $customized->gf_title_font_bold ) ? ( $customized->gf_title_font_bold
-			? 1 : 0 ) : 0;
+			? 1 : 0 ) : get_theme_mod( 'gf_title_font_bold' );
 		$ctfi  = isset( $customized->gf_title_font_italic ) ? ( $customized->gf_title_font_italic
-			? 1 : 0 ) : 0;
+			? 1 : 0 ) : get_theme_mod( 'gf_title_font_italic' );
 		$ctfu  = isset( $customized->gf_title_font_underline ) ? ( $customized->gf_title_font_underline
-			? 1 : 0 ) : 0;
+			? 1 : 0 ) : get_theme_mod( 'gf_title_font_underline' );
 		$ctfc  = '';
 		$ctfsv = isset( $customized->gf_title_font_shadow_vertical ) ? $customized->gf_title_font_shadow_vertical
-			: 0;
+			: get_theme_mod( 'gf_title_font_shadow_vertical' );
 		$ctfsh = isset( $customized->gf_title_font_shadow_horizontal ) ? $customized->gf_title_font_shadow_horizontal
-			: 0;
+			: get_theme_mod( 'gf_title_font_shadow_horizontal' );
 		$ctfsb = isset( $customized->gf_title_font_shadow_blur ) ? $customized->gf_title_font_shadow_blur
-			: 0;
+			: get_theme_mod( 'gf_title_font_shadow_blur' );
 		$ctfsc = isset( $customized->gf_title_font_shadow_color ) ? $customized->gf_title_font_shadow_color
-			: '';
+			: get_theme_mod( 'gf_title_font_shadow_color' );
 
 		$styles = self::BuildTitleStyles( $ctf, $ctfs, $ctfc, $ctfb, $ctfi, $ctfu, $ctfsv, $ctfsh, $ctfsb, $ctfsc, '!important' );
 
@@ -4084,25 +4083,25 @@ class GFontsEngine {
 
 	static public function LiveDescriptionCustomization( $customized ) {
 		$ctf   = isset( $customized->gf_title_tagline_font ) ? $customized->gf_title_tagline_font
-			: '';
+			: get_theme_mod( 'gf_title_tagline_font' );
 		$ctfs  = isset( $customized->gf_title_tagline_font_size ) ? $customized->gf_title_tagline_font_size
-			: '';
+			: get_theme_mod( 'gf_title_tagline_font_size' );
 		$ctfb  = isset( $customized->gf_title_tagline_font_bold ) ? ( $customized->gf_title_tagline_font_bold
-			? 1 : 0 ) : 0;
+			? 1 : 0 ) : get_theme_mod( 'gf_title_tagline_font_bold' );
 		$ctfi  = isset( $customized->gf_title_tagline_font_italic ) ? ( $customized->gf_title_tagline_font_italic
-			? 1 : 0 ) : 0;
+			? 1 : 0 ) : get_theme_mod( 'gf_title_tagline_font_italic' );
 		$ctfu  = isset( $customized->gf_title_tagline_font_underline ) ? ( $customized->gf_title_tagline_font_underline
-			? 1 : 0 ) : 0;
+			? 1 : 0 ) : get_theme_mod( 'gf_title_tagline_font_underline' );
 		$ctfc  = isset( $customized->gf_title_tagline_font_color ) ? $customized->gf_title_tagline_font_color
-			: '';
+			: get_theme_mod( 'gf_title_tagline_font_color' );
 		$ctfsv = isset( $customized->gf_title_tagline_font_shadow_vertical ) ? $customized->gf_title_tagline_font_shadow_vertical
-			: 0;
+			: get_theme_mod( 'gf_title_tagline_font_shadow_vertical' );
 		$ctfsh = isset( $customized->gf_title_tagline_font_shadow_horizontal ) ? $customized->gf_title_tagline_font_shadow_horizontal
-			: 0;
+			: get_theme_mod( 'gf_title_tagline_font_shadow_horizontal' );
 		$ctfsb = isset( $customized->gf_title_tagline_font_shadow_blur ) ? $customized->gf_title_tagline_font_shadow_blur
-			: 0;
+			: get_theme_mod( 'gf_title_tagline_font_shadow_blur' );
 		$ctfsc = isset( $customized->gf_title_tagline_font_shadow_color ) ? $customized->gf_title_tagline_font_shadow_color
-			: '';
+			: get_theme_mod( 'gf_title_tagline_font_shadow_color' );
 
 		$styles = self::BuildTitleStyles( $ctf, $ctfs, $ctfc, $ctfb, $ctfi, $ctfu, $ctfsv, $ctfsh, $ctfsb, $ctfsc, '!important' );
 
@@ -4557,10 +4556,18 @@ class GFontsEngine {
 	static public function DynamcSidebarParams( $params ) {
 		global $wp_registered_sidebars;
 		if ( ! is_admin() ) {
-			$params[0]['before_title'] = "<span class=\"gfcustomized-{$params[0]['id']} gfcustomized-sidebar\">" . $params[0]['before_title'];
-			$params[0]['after_title'] .= "</span><span class=\"gfcustomized-widget-body-{$params[0]['id']} gfcustomized-widget-body \">";
-			$params[0]['after_widget']  = "</span></div>" . $params[0]['after_widget'];
-			$params[0]['before_widget'] = "<div class=\"gfcustomized-widget-{$params[0]['widget_id']} gfcustomized-widget-{$params[0]['id']} gfcustomized-widget\">" . $params[0]['before_widget'];
+			$before_title  = "gfcustomized-{$params[0]['id']} gfcustomized-sidebar gfcustomized-widget-body-{$params[0]['id']} gfcustomized-widget-body";
+			$before_widget = "gfcustomized-widget-{$params[0]['widget_id']} gfcustomized-widget-{$params[0]['id']} gfcustomized-widget";
+			$params[0]['before_title'] = preg_replace(
+				'#(<.+class\s?+=[\'|"])([a-z0-9\s_\-]+)([\'|"].*?>)#i',
+				'$1$2 ' . $before_title . '$3',
+				$params[0]['before_title']
+			);
+			$params[0]['before_widget'] = preg_replace(
+				'#(<.+class\s?+=[\'|"])([a-z0-9\s_\-]+)([\'|"].*?>)#i',
+				'$1$2 ' . $before_widget . '$3',
+				$params[0]['before_widget']
+			);
 		}
 
 		return $params;
@@ -4634,8 +4641,7 @@ class GFontsEngine {
 			}
 
 			if ( $styles != '' ) {
-				$style .= ".gfcustomized-" . $sb['id'] . " > * { " . $styles . " }\r\n";
-				$style .= ".gfcustomized-" . $sb['id'] . " > * > * { " . $styles . " }\r\n";
+				$style .= ".gfcustomized-" . $sb['id'] . " { " . $styles . " }\r\n";
 			}
 
 			$stylescontent  = self::BuildTitleStyles( $cctf, $cctfs, $cctfc, $cctfb, $cctfi, false, $cctfsv, $cctfsh, $cctfsb, $cctfsc, '!important', true, $cctta ); //, $ccttalm, $ccttarm);
@@ -4652,11 +4658,11 @@ class GFontsEngine {
 			}
 
 			if ( $stylescontent != '' ) {
-				$stylecontent .= ".gfcustomized-widget-" . $sb['id'] . " a, .gfcustomized-widget-" . $sb['id'] . ",  .gfcustomized-widget-" . $sb['id'] . " div { " . $stylescontent . " }\r\n";
+				$stylecontent .= ".gfcustomized-widget-" . $sb['id'] . " a, .gfcustomized-widget-" . $sb['id'] . ",  .gfcustomized-widget-" . $sb['id'] . " { " . $stylescontent . " }\r\n";
 			}
 
 			if ( $stylescontent2 != '' ) {
-				$stylecontent .= ".gfcustomized-widget-body-" . $sb['id'] . ", .gfcustomized-widget-body-" . $sb['id'] . " > * { " . $stylescontent2 . " }\r\n";
+				$stylecontent .= ".gfcustomized-widget-body-" . $sb['id'] . "+, .gfcustomized-widget-body-" . $sb['id'] . "+ { " . $stylescontent2 . " }\r\n";
 			}
 		}
 
@@ -4713,58 +4719,44 @@ class GFontsEngine {
 			$_ccrbr = 'gf_custom_widget_' . $id . '_content_bottom_right_radius';
 			$_cclbr = 'gf_custom_widget_' . $id . '_content_bottom_left_radius';
 
-			$ctf       = ( isset( $customized->$_ctf ) ) ? $customized->$_ctf : "";
-			$ctfs      = ( isset( $customized->$_ctfs ) ) ? $customized->$_ctfs : "";
-			$ctta      = ( isset( $customized->$_ctta ) ) ? $customized->$_ctta : "";
-			$ctfb      = ( isset( $customized->$_ctfb ) ) ? $customized->$_ctfb : 0;
-			$ctfi      = ( isset( $customized->$_ctfi ) ) ? $customized->$_ctfi : 0;
-			$ctfu      = ( isset( $customized->$_ctfu ) ) ? $customized->$_ctfu : 0;
-			$ctfc      = ( isset( $customized->$_ctfc ) ) ? $customized->$_ctfc : "";
-			$ctfsv     = ( isset( $customized->$_ctfsv ) ) ? $customized->$_ctfsv : 0;
-			$ctfsh     = ( isset( $customized->$_ctfsh ) ) ? $customized->$_ctfsh : 0;
-			$ctfsb     = ( isset( $customized->$_ctfsb ) ) ? $customized->$_ctfsb : 0;
-			$ctfsc     = ( isset( $customized->$_ctfsc ) ) ? $customized->$_ctfsc : '';
-			$ctbgcolor = ( isset( $customized->$_ctbgcolor ) ) ? $customized->$_ctbgcolor
-				: '';
+			$ctf       = ( isset( $customized->$_ctf ) ) ? $customized->$_ctf : get_theme_mod( $_ctf );
+			$ctfs      = ( isset( $customized->$_ctfs ) ) ? $customized->$_ctfs : get_theme_mod( $_ctfs );
+			$ctta      = ( isset( $customized->$_ctta ) ) ? $customized->$_ctta : get_theme_mod( $_ctta );
+			$ctfb      = ( isset( $customized->$_ctfb ) ) ? $customized->$_ctfb : get_theme_mod( $_ctfb );
+			$ctfi      = ( isset( $customized->$_ctfi ) ) ? $customized->$_ctfi : get_theme_mod( $_ctfi );
+			$ctfu      = ( isset( $customized->$_ctfu ) ) ? $customized->$_ctfu : get_theme_mod( $_ctfu );
+			$ctfc      = ( isset( $customized->$_ctfc ) ) ? $customized->$_ctfc : get_theme_mod( $_ctfc );
+			$ctfsv     = ( isset( $customized->$_ctfsv ) ) ? $customized->$_ctfsv : get_theme_mod( $_ctfsv );
+			$ctfsh     = ( isset( $customized->$_ctfsh ) ) ? $customized->$_ctfsh : get_theme_mod( $_ctfsh );
+			$ctfsb     = ( isset( $customized->$_ctfsb ) ) ? $customized->$_ctfsb : get_theme_mod( $_ctfsb );
+			$ctfsc     = ( isset( $customized->$_ctfsc ) ) ? $customized->$_ctfsc : get_theme_mod( $_ctfsc );
+			$ctbgcolor = ( isset( $customized->$_ctbgcolor ) ) ? $customized->$_ctbgcolor : get_theme_mod( $_ctbgcolor );
 
-			$cltr = ( isset( $customized->$_cltr ) ) ? $customized->$_cltr : 0;
-			$crtr = ( isset( $customized->$_crtr ) ) ? $customized->$_crtr : 0;
-			$crbr = ( isset( $customized->$_crbr ) ) ? $customized->$_crbr : 0;
-			$clbr = ( isset( $customized->$_clbr ) ) ? $customized->$_clbr : 0;
+			$cltr = ( isset( $customized->$_cltr ) ) ? $customized->$_cltr : get_theme_mod( $_cltr );
+			$crtr = ( isset( $customized->$_crtr ) ) ? $customized->$_crtr : get_theme_mod( $_crtr );
+			$crbr = ( isset( $customized->$_crbr ) ) ? $customized->$_crbr : get_theme_mod( $_crbr );
+			$clbr = ( isset( $customized->$_clbr ) ) ? $customized->$_clbr : get_theme_mod( $_clbr );
 
 			/////////////////
-			$cctf       = ( isset( $customized->$_cctf ) ) ? $customized->$_cctf : "";
-			$cctfs      = ( isset( $customized->$_cctfs ) ) ? $customized->$_cctfs
-				: "";
-			$cctta      = ( isset( $customized->$_cctta ) ) ? $customized->$_cctta
-				: "";
-			$ccttalm    = ( isset( $customized->$_ccttalm ) ) ? $customized->$_ccttalm
-				: "";
-			$ccttarm    = ( isset( $customized->$_ccttarm ) ) ? $customized->$_ccttarm
-				: "";
-			$cctfb      = ( isset( $customized->$_cctfb ) ) ? $customized->$_cctfb
-				: 0;
-			$cctfi      = ( isset( $customized->$_cctfi ) ) ? $customized->$_cctfi
-				: 0;
-			$cctfu      = ( isset( $customized->$_cctfu ) ) ? $customized->$_cctfu
-				: 0;
-			$cctfc      = ( isset( $customized->$_cctfc ) ) ? $customized->$_cctfc
-				: "";
-			$cctfsv     = ( isset( $customized->$_ctcfsv ) ) ? $customized->$_ctcfsv
-				: 0;
-			$cctfsh     = ( isset( $customized->$_ctcfsh ) ) ? $customized->$_ctcfsh
-				: 0;
-			$cctfsb     = ( isset( $customized->$_ctcfsb ) ) ? $customized->$_ctcfsb
-				: 0;
-			$cctfsc     = ( isset( $customized->$_ctcfsc ) ) ? $customized->$_ctcfsc
-				: '';
-			$cctbgcolor = ( isset( $customized->$_ctcbgcolor ) ) ? $customized->$_ctcbgcolor
-				: '';
+			$cctf       = ( isset( $customized->$_cctf ) ) ? $customized->$_cctf : get_theme_mod( $_cctf );
+			$cctfs      = ( isset( $customized->$_cctfs ) ) ? $customized->$_cctfs : get_theme_mod( $_cctfs );
+			$cctta      = ( isset( $customized->$_cctta ) ) ? $customized->$_cctta : get_theme_mod( $_cctta );
+			$ccttalm    = ( isset( $customized->$_ccttalm ) ) ? $customized->$_ccttalm : get_theme_mod( $_ccttalm );
+			$ccttarm    = ( isset( $customized->$_ccttarm ) ) ? $customized->$_ccttarm : get_theme_mod( $_ccttarm );
+			$cctfb      = ( isset( $customized->$_cctfb ) ) ? $customized->$_cctfb : get_theme_mod( $_cctfb );
+			$cctfi      = ( isset( $customized->$_cctfi ) ) ? $customized->$_cctfi : get_theme_mod( $_cctfi );
+			$cctfu      = ( isset( $customized->$_cctfu ) ) ? $customized->$_cctfu : get_theme_mod( $_cctfu );
+			$cctfc      = ( isset( $customized->$_cctfc ) ) ? $customized->$_cctfc : get_theme_mod( $_cctfc );
+			$cctfsv     = ( isset( $customized->$_ctcfsv ) ) ? $customized->$_ctcfsv : get_theme_mod( $_ctcfsv );
+			$cctfsh     = ( isset( $customized->$_ctcfsh ) ) ? $customized->$_ctcfsh : get_theme_mod( $_ctcfsh );
+			$cctfsb     = ( isset( $customized->$_ctcfsb ) ) ? $customized->$_ctcfsb : get_theme_mod( $_ctcfsb );
+			$cctfsc     = ( isset( $customized->$_ctcfsc ) ) ? $customized->$_ctcfsc : get_theme_mod( $_ctcfsc );
+			$cctbgcolor = ( isset( $customized->$_ctcbgcolor ) ) ? $customized->$_ctcbgcolor : get_theme_mod( $_ctcbgcolor );
 
-			$ccltr = ( isset( $customized->$_ccltr ) ) ? $customized->$_ccltr : 0;
-			$ccrtr = ( isset( $customized->$_ccrtr ) ) ? $customized->$_ccrtr : 0;
-			$ccrbr = ( isset( $customized->$_ccrbr ) ) ? $customized->$_ccrbr : 0;
-			$cclbr = ( isset( $customized->$_cclbr ) ) ? $customized->$_cclbr : 0;
+			$ccltr = ( isset( $customized->$_ccltr ) ) ? $customized->$_ccltr : get_theme_mod( $_ccltr );
+			$ccrtr = ( isset( $customized->$_ccrtr ) ) ? $customized->$_ccrtr : get_theme_mod( $_ccrtr );
+			$ccrbr = ( isset( $customized->$_ccrbr ) ) ? $customized->$_ccrbr : get_theme_mod( $_ccrbr );
+			$cclbr = ( isset( $customized->$_cclbr ) ) ? $customized->$_cclbr : get_theme_mod( $_cclbr );
 
 
 			$styles = self::BuildTitleStyles( $ctf, $ctfs, $ctfc, $ctfb, $ctfi, $ctfu, $ctfsv, $ctfsh, $ctfsb, $ctfsc, '!important', true, $ctta );
@@ -4786,8 +4778,7 @@ class GFontsEngine {
 			}
 
 			if ( $styles != '' ) {
-				$style .= ".gfcustomized-" . $sb['id'] . " > * { " . $styles . " }\r\n";
-				$style .= ".gfcustomized-" . $sb['id'] . " > * > * { " . $styles . " }\r\n";
+				$style .= ".gfcustomized-" . $sb['id'] . " { " . $styles . " }\r\n";
 			}
 
 			$stylescontent  = self::BuildTitleStyles( $cctf, $cctfs, $cctfc, $cctfb, $cctfi, false, $cctfsv, $cctfsh, $cctfsb, $cctfsc, '!important', true, $cctta ); //, $ccttalm, $ccttarm);
@@ -4804,11 +4795,11 @@ class GFontsEngine {
 			}
 
 			if ( $stylescontent != '' ) {
-				$stylecontent .= ".gfcustomized-widget-" . $sb['id'] . " a, .gfcustomized-widget-" . $sb['id'] . ",  .gfcustomized-widget-" . $sb['id'] . " div { " . $stylescontent . " }\r\n";
+				$stylecontent .= ".gfcustomized-widget-" . $sb['id'] . " a, .gfcustomized-widget-" . $sb['id'] . ",  .gfcustomized-widget-" . $sb['id'] . " { " . $stylescontent . " }\r\n";
 			}
 
 			if ( $stylescontent2 != '' ) {
-				$stylecontent .= ".gfcustomized-widget-body-" . $sb['id'] . ", .gfcustomized-widget-body-" . $sb['id'] . " > * { " . $stylescontent2 . " }\r\n";
+				$stylecontent .= ".gfcustomized-widget-body-" . $sb['id'] . "+, .gfcustomized-widget-body-" . $sb['id'] . "+ { " . $stylescontent2 . " }\r\n";
 			}
 		}
 
