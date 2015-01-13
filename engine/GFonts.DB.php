@@ -1,8 +1,10 @@
 <?php
 
+/** @noinspection PhpMissingDocCommentInspection */
 class GFontsDB {
 
 	static public function InstallDB() {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'gf_fontlist';
 		$sql1 = "CREATE TABLE $table_name (
@@ -22,6 +24,7 @@ class GFontsDB {
 		);";
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		/** @noinspection PhpInternalEntityUsedInspection */
 		dbDelta($sql1);
 
 		$table_name = $wpdb->prefix . 'gf_font_post';
@@ -33,6 +36,7 @@ class GFontsDB {
 			KEY ix_gfp_gfid (gf_fontlist_id)
 		);";
 
+		/** @noinspection PhpInternalEntityUsedInspection */
 		dbDelta($sql2);
 
 		$table_name = $wpdb->prefix . 'gf_title_font_preset';
@@ -56,6 +60,7 @@ class GFontsDB {
 			PRIMARY KEY  (id)
 		);";
 
+		/** @noinspection PhpInternalEntityUsedInspection */
 		dbDelta($sql3);
 
 		$table_name = $wpdb->prefix . 'gf_polls';
@@ -82,6 +87,7 @@ class GFontsDB {
 			PRIMARY KEY  (id)
 		);";
 
+		/** @noinspection PhpInternalEntityUsedInspection */
 		dbDelta($sql4);
 
 		$table_name = $wpdb->prefix . 'gf_polls_answers';
@@ -94,6 +100,7 @@ class GFontsDB {
 			PRIMARY KEY  (id)
 		);";
 
+		/** @noinspection PhpInternalEntityUsedInspection */
 		dbDelta($sql5);
 
 		$table_name = $wpdb->prefix . 'gf_polls_ips';
@@ -103,6 +110,7 @@ class GFontsDB {
 			UNIQUE KEY uq_gpi_uq (gf_polls_id,ip_address)
 		);";
 
+		/** @noinspection PhpInternalEntityUsedInspection */
 		dbDelta($sql6);
 
 		$table_name = $wpdb->prefix . 'gf_theme_layouts';
@@ -117,10 +125,12 @@ class GFontsDB {
 			UNIQUE KEY uq_gtl_uuid (uuid)
 		);";
 
+		/** @noinspection PhpInternalEntityUsedInspection */
 		dbDelta($sql7);
 	}
 
 	static public function UninstallDB() {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		$table_name = $wpdb->prefix . 'gf_fontlist';
@@ -131,7 +141,9 @@ class GFontsDB {
 		$wpdb->query($sql);
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function InstallFont($fontname, $variant, $subsets, $noinstall = false) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = "SELECT COUNT(*) FROM " . $wpdb->prefix . "gf_fontlist WHERE name = %s AND variant = %s";
 		$sqlPrepared = $wpdb->prepare($sql, $fontname, $variant);
@@ -150,9 +162,12 @@ class GFontsDB {
 			$i = (int) $wpdb->get_var($sqlPrepared);
 			return $i;
 		}
+		return 0;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function UninstallFont($fontname, $variant) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = "UPDATE " . $wpdb->prefix . "gf_fontlist SET installed = 0 WHERE name = %s";
 		$sqlPrepared = $wpdb->prepare($sql, $fontname, $variant);
@@ -163,10 +178,12 @@ class GFontsDB {
 		return $i;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function GetInstalledFonts($useParameter = 0, $nameFilter = '', $orderby = '', $direction = '') {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$nameFilter = '%' . $nameFilter . '%';
-
+		$sql = null;
 		if ($useParameter == 0) {
 			$sql = "SELECT id, name, variant, used_in_posts, total_used, in_trash, subsets FROM " . $wpdb->prefix . "gf_fontlist WHERE installed = 1 AND gfont = 1 AND name like %s";
 		} elseif ($useParameter == 1) {
@@ -190,12 +207,14 @@ class GFontsDB {
 	}
 
 	static public function GetAllFonts() {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = "SELECT id, name, gfont FROM " . $wpdb->prefix . "gf_fontlist ORDER BY name ASC";
 		return $wpdb->get_results($sql);
 	}
 
 	static public function GetInstalledFontsStats() {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = "SELECT 'used', count(*) as qty FROM " . $wpdb->prefix . "gf_fontlist where installed = 1 and used_in_posts > 0 and gfont = 1
 		UNION ALL
@@ -205,14 +224,18 @@ class GFontsDB {
 		return $wpdb->get_results($sql);
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function UninstallFontById($id) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = "UPDATE " . $wpdb->prefix . "gf_fontlist SET installed = 0 WHERE installed = 1 AND id = %d";
 		$sqlPrepared = $wpdb->prepare($sql, intval($id));
 		$wpdb->query($sqlPrepared);
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function GetFontsWithPosts($nameFilter = '', $orderby = '', $direction = '') {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$nameFilter = '%' . $nameFilter . '%';
 		$sql = "SELECT id, name, variant, used_in_posts, in_trash, total_used, gfont FROM " . $wpdb->prefix . "gf_fontlist WHERE total_used > 0 AND name LIKE %s";
@@ -230,7 +253,9 @@ class GFontsDB {
 		return $wpdb->get_results($sqlPrepared);
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function UninstallFontByIdCollection($arr) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$ids = array();
 		foreach ($arr as $itm) {
@@ -245,7 +270,9 @@ class GFontsDB {
 		}
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function UpdateFontUsedIn($id, $value, $gfont) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$gfontVal = $gfont ? 1 : 0;
 		$sql = "UPDATE {$wpdb->prefix}gf_fontlist SET used_in_posts = %d, gfont = %d, installed = %d WHERE id = %d";
@@ -254,7 +281,9 @@ class GFontsDB {
 		$wpdb->query($sqlPrepared);
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function InstallFontUsedIn($name, $value, $gfont) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$gfontVal = $gfont ? 1 : 0;
 		$sql = "INSERT INTO {$wpdb->prefix}gf_fontlist(name, used_in_posts, variant, gfont, installed, subsets) VALUES(%s, %d, 'regular', %d, 1, '')";
@@ -263,7 +292,9 @@ class GFontsDB {
 		return $wpdb->get_var($wpdb->prepare("SELECT id FROM {$wpdb->prefix}gf_fontlist WHERE name = %s", $name));
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function UpdateFontUsedInTrash($id, $value, $gfont) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$gfontVal = $gfont ? 1 : 0;
 		$sql = "UPDATE {$wpdb->prefix}gf_fontlist SET in_trash = %d, gfont = %d, installed = %d WHERE id = %d";
@@ -272,7 +303,9 @@ class GFontsDB {
 		$wpdb->query($sqlPrepared);
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function InstallFontUsedInTrash($name, $value, $gfont) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$gfontVal = $gfont ? 1 : 0;
 		$sql = "INSERT INTO {$wpdb->prefix}gf_fontlist(name, in_trash, variant, gfont, installed, subsets) VALUES(%s, %d, 'regular', %d, 1, '')";
@@ -282,12 +315,15 @@ class GFontsDB {
 	}
 
 	static public function CalculateTotalUsed() {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = "UPDATE {$wpdb->prefix}gf_fontlist SET total_used = used_in_posts + in_trash";
 		$wpdb->query($sql);
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function FontPostRelation($idpost, $idfont) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = "INSERT INTO {$wpdb->prefix}gf_font_post(wp_post_id, gf_fontlist_id) VALUES(%d, %d)";
 		$sqlPrepared = $wpdb->prepare($sql, $idpost, $idfont);
@@ -295,6 +331,7 @@ class GFontsDB {
 	}
 
 	static public function RecalculateStats() {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$wpdb->query("UPDATE {$wpdb->prefix}gf_fontlist SET used_in_posts = 0, in_trash = 0, total_used = 0");
 		$wpdb->query("TRUNCATE TABLE {$wpdb->prefix}gf_font_post");
@@ -308,7 +345,6 @@ class GFontsDB {
 		$offset = 0;
 		$usedInPosts = array();
 		$usedInPostsInTrash = array();
-		$komik = 0;
 		while (!$finish) {
 			$args = array(
 				'posts_per_page' => 200,
@@ -413,6 +449,7 @@ class GFontsDB {
 		}
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function GetFontsToReplace($exclude = '') {
 		$fnts = GFontsDB::GetInstalledFonts();
 		$avFonts = array();
@@ -451,7 +488,9 @@ class GFontsDB {
 		return $avFonts;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function ReplaceFont($srcFontId, $dstFontname) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = "SELECT wp_post_id FROM {$wpdb->prefix}gf_font_post WHERE gf_fontlist_id = %d";
 		$sqlPrepared = $wpdb->prepare($sql, $srcFontId);
@@ -472,7 +511,6 @@ class GFontsDB {
 			'category' => '',
 			'orderby' => 'post_date',
 			'order' => 'DESC',
-			'include' => '',
 			'exclude' => '',
 			'meta_key' => '',
 			'meta_value' => '',
@@ -515,8 +553,8 @@ class GFontsDB {
 		$wpdb->query($sqlPrepared);
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function GetFontsFromContent($content) {
-		$regex = '/font-family:\s?(.+?)[;|\'|"]/i';
 		$regex = '/font-family:\s?([\w\\\\\'\s\-]+)[;|\'|"|,]/i';
 		$matches = array();
 		if (preg_match_all($regex, $content, $matches)) {
@@ -538,6 +576,7 @@ class GFontsDB {
 		}
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function ContentSave($id, $oldContent, $newContent) {
 		$oldFonts = GFontsDB::GetFontsFromContent($oldContent);
 		$newFonts = GFontsDB::GetFontsFromContent($newContent);
@@ -557,6 +596,7 @@ class GFontsDB {
 		}
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function DetectFontChanges($font1, $font2) {
 		if ($font1 === null) {
 			return array(
@@ -578,7 +618,9 @@ class GFontsDB {
 		);
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function RemoveFontFromPost($font, $id) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$fontId = GFontsDB::GetOrInstallFontByName($font, 0);
 		$sql = $wpdb->prepare("DELETE FROM {$wpdb->prefix}gf_font_post WHERE wp_post_id = %d and gf_fontlist_id = %d", $id, $fontId);
@@ -588,7 +630,9 @@ class GFontsDB {
 		$wpdb->query("UPDATE {$wpdb->prefix}gf_fontlist SET used_in_posts = 0, total_used = used_in_posts + in_trash WHERE used_in_posts < 0");
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function AddFontToPost($font, $id) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$fontId = GFontsDB::GetOrInstallFontByName($font, 0);
 		$sql = $wpdb->prepare("INSERT INTO {$wpdb->prefix}gf_font_post(wp_post_id, gf_fontlist_id) VALUES(%d, %d)", $id, $fontId);
@@ -597,7 +641,9 @@ class GFontsDB {
 		$wpdb->query($sql);
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function GetOrInstallFontByName($name, $gfont) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("SELECT id FROM {$wpdb->prefix}gf_fontlist WHERE name = %s", $name);
 		$id = $wpdb->get_var($sql);
@@ -611,7 +657,9 @@ class GFontsDB {
 		}
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function PostDeleted($postid) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("SELECT gf_fontlist_id FROM {$wpdb->prefix}gf_font_post WHERE wp_post_id = %d", $postid);
 		$ids = $wpdb->get_col($sql);
@@ -624,7 +672,9 @@ class GFontsDB {
 		$wpdb->query("UPDATE {$wpdb->prefix}gf_fontlist SET total_used = 0 WHERE total_used < 0");
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function TrashedPost($postid) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("SELECT gf_fontlist_id FROM {$wpdb->prefix}gf_font_post WHERE wp_post_id = %d", $postid);
 		$ids = $wpdb->get_col($sql);
@@ -635,7 +685,9 @@ class GFontsDB {
 		$wpdb->query("UPDATE {$wpdb->prefix}gf_fontlist SET used_in_posts = 0 WHERE used_in_posts < 0");
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function UnTrashedPost($postid) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("SELECT gf_fontlist_id FROM {$wpdb->prefix}gf_font_post WHERE wp_post_id = %d", $postid);
 		$ids = $wpdb->get_col($sql);
@@ -646,7 +698,9 @@ class GFontsDB {
 		$wpdb->query("UPDATE {$wpdb->prefix}gf_fontlist SET in_trash = 0 WHERE in_trash < 0");
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function SaveTitlePreset($values) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = "UPDATE {$wpdb->prefix}gf_title_font_preset SET is_default = 0";
 		$wpdb->query($sql);
@@ -665,13 +719,16 @@ class GFontsDB {
 	}
 
 	static public function LoadTitlePresets() {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = "SELECT * FROM {$wpdb->prefix}gf_title_font_preset ORDER BY name ASC";
 		$results = $wpdb->get_results($sql);
 		return $results;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function UpdateTitlePreset($values) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = "UPDATE {$wpdb->prefix}gf_title_font_preset SET is_default = 0";
 		$wpdb->query($sql);
@@ -683,20 +740,25 @@ class GFontsDB {
 		$wpdb->query($sql);
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function GetPresetByName($name) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}gf_title_font_preset WHERE name = %s", $name);
 		$result = $wpdb->get_row($sql);
 		return $result;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function GetPresetById($id) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}gf_title_font_preset WHERE id = %d", $id);
 		$result = $wpdb->get_row($sql);
 		return $result;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function RemoveTitlePresetFromPost($post_id) {
 		delete_post_meta($post_id, 'gf_custom_title_font');
 		delete_post_meta($post_id, 'gf_custom_title_font_size');
@@ -710,6 +772,7 @@ class GFontsDB {
 		delete_post_meta($post_id, 'gf_custom_title_font_shadow_color');
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function SetTitlePresetForPost($post_id, $preset) {
 		$ctf = $preset->font;
 		$ctfs = $preset->title_size;
@@ -733,12 +796,15 @@ class GFontsDB {
 		update_post_meta($post_id, 'gf_custom_title_font_shadow_color', $ctfsc);
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function DeletePreset($id) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("DELETE FROM {$wpdb->prefix}gf_title_font_preset WHERE id = %d", $id);
 		$wpdb->query($sql);
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function SetTitlePresetForPosts($presetid, $withoutstyling = true) {
 		$preset = self::GetPresetById($presetid);
 		if (!$preset) {
@@ -787,6 +853,7 @@ class GFontsDB {
 		return $count;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function RemoveTitlePresetFromPosts() {
 		$count = 0;
 		$finish = false;
@@ -825,6 +892,7 @@ class GFontsDB {
 		return $count;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function ModifyCapitalizeUpperLowerTitles($action = 'capitalize') {
 		$count = 0;
 		$finish = false;
@@ -880,6 +948,7 @@ class GFontsDB {
 		return $count;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function ReplaceInTitles($src, $dst) {
 		$count = 0;
 		$finish = false;
@@ -908,7 +977,6 @@ class GFontsDB {
 
 			foreach ($posts as $post) {
 				$title = $post->post_title;
-				$go = true;
 				$ntitle = str_replace($src, $dst, $title);
 				$go = ($ntitle != $title);
 				if ($go) {
@@ -925,14 +993,18 @@ class GFontsDB {
 		return $count;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function GetPoll($id) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}gf_polls WHERE id = %d", $id);
 		$result = $wpdb->get_row($sql);
 		return $result;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function SavePoll($id, $name, $title, $type, $results_type, $voting_enabled, $voting_end_date, $client_mode, $button_title) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		if ($id == -1) {
 			$sql = $wpdb->prepare("INSERT INTO {$wpdb->prefix}gf_polls(name, title, type, results_type, voting_enabled, voting_end_date, client_mode, button_title) VALUES(%s, %s, %d, %d, %d, %s, %d, %s)", $name, $title, $type, $results_type, $voting_enabled, $voting_end_date, $client_mode, $button_title);
@@ -946,7 +1018,9 @@ class GFontsDB {
 		}
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function DeletePoll($id) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("DELETE FROM {$wpdb->prefix}gf_polls_ips WHERE gf_polls_id = %d", $id);
 		$wpdb->query($sql);
@@ -957,14 +1031,18 @@ class GFontsDB {
 	}
 
 	////////////////////////////////////////////////////
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function GetAnswer($id) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}gf_polls_answers WHERE id = %d", $id);
 		$result = $wpdb->get_row($sql);
 		return $result;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function SaveAnswer($id, $answer, $hits, $gf_polls_id) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		if ($id == -1) {
 			$sql = $wpdb->prepare("INSERT INTO {$wpdb->prefix}gf_polls_answers(answer, hits, gf_polls_id) VALUES(%s, %d, %d)", $answer, $hits, $gf_polls_id);
@@ -978,13 +1056,16 @@ class GFontsDB {
 		}
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function DeleteAnswer($id) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("DELETE FROM {$wpdb->prefix}gf_polls_answers WHERE id = %d", $id);
 		$wpdb->query($sql);
 	}
 
 	static public function GetActivePolls() {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = "SELECT * FROM {$wpdb->prefix}gf_polls WHERE voting_end_date > CURRENT_TIMESTAMP()";
 		$results = $wpdb->get_results($sql);
@@ -992,20 +1073,25 @@ class GFontsDB {
 	}
 
 	static public function GetAllPolls() {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = "SELECT * FROM {$wpdb->prefix}gf_polls ORDER BY name ASC";
 		$results = $wpdb->get_results($sql);
 		return $results;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function GetAnswersForPoll($poll_id) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}gf_polls_answers WHERE gf_polls_id = %d", $poll_id);
 		$results = $wpdb->get_results($sql);
 		return $results;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function AddPollHit($poll_id, $answer_id, $client_mode, $ip) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("UPDATE {$wpdb->prefix}gf_polls_answers SET hits = hits + 1 WHERE id = %d", $answer_id);
 		$wpdb->query($sql);
@@ -1015,13 +1101,17 @@ class GFontsDB {
 		}
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function CheckVoteIpForPoll($poll_id, $ip) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}gf_polls_ips WHERE gf_polls_id = %d AND ip_address = %s", $poll_id, $ip);
 		return $wpdb->get_var($sql);
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function SetTitlePresetDefault($preset_id) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = "UPDATE {$wpdb->prefix}gf_title_font_preset SET is_default = 0";
 		$wpdb->query($sql);
@@ -1030,12 +1120,14 @@ class GFontsDB {
 	}
 
 	static public function GetDefaultTitlePreset() {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = "SELECT * FROM {$wpdb->prefix}gf_title_font_preset WHERE is_default = 1 LIMIT 1";
 		$result = $wpdb->get_row($sql);
 		return $result;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function ModifyCapitalizeUpperLowerTitlesLimited($action = 'capitalize', $start = 0, $limit = 15) {
 		$count = 0;
 		$finish = false;
@@ -1090,20 +1182,22 @@ class GFontsDB {
 		return $count + $start;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function DeleteThemeLayout($id) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("DELETE FROM {$wpdb->prefix}gf_theme_layouts WHERE id = %d", $id);
 		$wpdb->query($sql);
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function SaveCurrentLayoutSettings($lname) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		if (trim($lname) == '') {
 			$lname = 'Unknown';
 		}
-
-		$ch = get_theme_support('custom-header');
-
+		/* @var $theme WP_Theme */
 		$theme = wp_get_theme();
 		$ltname = $lname;
 		$sql = $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}gf_theme_layouts WHERE gtl_name = %s", $ltname);
@@ -1116,16 +1210,20 @@ class GFontsDB {
 		}
 
 		$thememods = get_theme_mods();
+		/** @noinspection PhpUndefinedFieldInspection */
 		$sql = $wpdb->prepare("INSERT INTO {$wpdb->prefix}gf_theme_layouts(gtl_name, gtl_layout, gtl_settings, uuid) VALUES(%s, %s, %s, %s)", $ltname, $theme->name, serialize($thememods), self::uuid());
 		$wpdb->query($sql);
 		return true;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function ActivateLayoutSettings($id, &$name) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$theme = wp_get_theme();
 		$sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}gf_theme_layouts WHERE id = %d", $id);
 		$sett = $wpdb->get_row($sql);
+		/** @noinspection PhpUndefinedFieldInspection */
 		if ($sett->gtl_layout != $theme->name) {
 			$name = $sett->gtl_layout;
 			return false;
@@ -1138,14 +1236,17 @@ class GFontsDB {
 		}
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function GetThemeLayout($id) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
-		$theme = wp_get_theme();
 		$sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}gf_theme_layouts WHERE id = %d", $id);
 		return $wpdb->get_row($sql);
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function RenameThemeLayout($id, $name) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		if (trim($name) == '') {
 			$name = 'Unknown';
@@ -1163,12 +1264,16 @@ class GFontsDB {
 		$wpdb->query($sql);
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function uuid() {
 		return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0x0fff) | 0x4000, mt_rand(0, 0x3fff) | 0x8000, mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function ExportTitlePresets($ids) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
+		$nids = array();
 		$sql = "SELECT * FROM {$wpdb->prefix}gf_title_font_preset WHERE id IN (";
 		foreach ($ids as $id) {
 			$nids[] = intval($id);
@@ -1206,8 +1311,11 @@ class GFontsDB {
 		return $xml;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function ExportThemeLayouts($ids) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
+		$nids = array();
 		$sql = "SELECT * FROM {$wpdb->prefix}gf_theme_layouts WHERE id IN (";
 		foreach ($ids as $id) {
 			$nids[] = intval($id);
@@ -1271,20 +1379,26 @@ class GFontsDB {
 		return $xml;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function GetFontByName($font) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}gf_fontlist WHERE name = %s", $font);
 		$obj = $wpdb->get_row($sql);
 		return $obj;
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function GetTitlePresetForUuid($uuid) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("SELECT * FROM {$wpdb->prefix}gf_title_font_preset WHERE uuid = %s", $uuid);
 		return $wpdb->get_row($sql);
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function ImportThemeLayout($layout) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}gf_theme_layouts WHERE uuid = %s", $layout->uuid);
 		$i = $wpdb->get_var($sql);
@@ -1339,7 +1453,9 @@ class GFontsDB {
 		}
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function ImportPreset($preset) {
+		/* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}gf_title_font_preset WHERE uuid = %s", $preset->uuid);
 		$i = $wpdb->get_var($sql);
@@ -1353,6 +1469,7 @@ class GFontsDB {
 		}
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function AddAttachmentsToLayoutExport(&$gtl_settings, &$xml) {
 		$regex = '/' . str_replace('/', '\/', WP_CONTENT_URL) . '\/uploads\/[^"]+/im';
 		$matches = array();
@@ -1364,7 +1481,7 @@ class GFontsDB {
 					$n[$url] = GFontsDB::uuid();
 				}
 			}
-
+			/* @var $wpdb wpdb */
 			global $wpdb;
 			$attachments = array();
 			foreach ($n as $url => $uuid) {
@@ -1403,6 +1520,7 @@ class GFontsDB {
 		$gtl_settings = serialize($gtl);
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function ReplaceAttachmentsInExportArray(&$gtl_settings, $n) {
 		foreach ($gtl_settings as $key => $value) {
 			if (!is_array($value) && !is_object($value)) {
@@ -1425,6 +1543,7 @@ class GFontsDB {
 		}
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function PlaceAttachmentsInExportArray(&$gtl_settings, $n) {
 		$patt = '/repl\:\[([a-z0-9\-]+)\]/i';
 		foreach ($gtl_settings as $key => $value) {
@@ -1448,6 +1567,7 @@ class GFontsDB {
 		}
 	}
 
+	/** @noinspection PhpMissingDocCommentInspection */
 	static public function AddFontsUsedInLayoutExport(&$gtl_settings_str, &$xml) {
 		$gfonts = array();
 		$gtl_settings = unserialize($gtl_settings_str);
@@ -1507,12 +1627,14 @@ class GFontsDB {
 	}
 
     static public function CountFonts() {
+	    /* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}gf_fontlist WHERE installed = %d AND gfont = %d", 1, 1);
 		return $wpdb->get_var($sql);
 	}
 
     static public function CountPolls() {
+	    /* @var $wpdb wpdb */
 		global $wpdb;
 		$sql = $wpdb->prepare("SELECT COUNT(*) FROM {$wpdb->prefix}gf_polls", 1, 1);
 		return $wpdb->get_var($sql);

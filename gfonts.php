@@ -42,4 +42,3 @@ define( 'PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GFONTS_ABS_PATH', dirname( __FILE__ ) );
 $gfe = new GFontsEngine();
 $gfe->Run( __FILE__ );
-?>
