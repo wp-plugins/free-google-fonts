@@ -785,7 +785,7 @@ class GFontsEngine {
 		$error   = is_wp_error( $content );
 		if ( $error ) {
 			update_option( self::PLUGIN_OPTION_FONT_UPDATE_STATE, - 1 );
-			update_option( self::PLUGIN_OPTION_FONT_UPDATE_STATE_MESSAGE, curl_error( $curlClient ) );
+			update_option( self::PLUGIN_OPTION_FONT_UPDATE_STATE_MESSAGE, __( 'There was an error during fetching fonts update.' ) );
 			update_option( self::PLUGIN_OPTION_FONT_UPDATE_DATE, date( "Y-m-d H:i:s" ) );
 		} else {
 			$json = json_decode( $content['body'] );
@@ -4016,15 +4016,35 @@ class GFontsEngine {
 			if ( $style2css['modified'] ) {
 				$style2 = $style2css['css'];
 			}
-			$style3 = self::ThemeMenuItemCustomization();
-			$style4 = self::ThemeHoverMenuItemCustomization();
-			$style5 = self::ThemeCommentBoxCustomization();
-			$style6 = self::ThemeCommentBoxSubmitCustomization();
-			$style7 = self::ThemeSidebarsCustomization();
+			$style3 = '';
+			$style3css = self::ThemeMenuItemCustomization();
+			if ( $style3css['modified'] ) {
+				$style3 = $style3css['css'];
+			}
+			$style4 = '';
+			$style4css = self::ThemeHoverMenuItemCustomization();
+			if ( $style4css['modified'] ) {
+				$style4 = $style4css['css'];
+			}
+			$style5 = '';
+			$style5css = self::ThemeCommentBoxCustomization();
+			if ( $style5css['modified'] ) {
+				$style5 = $style5css['css'];
+			}
+			$style6 = '';
+			$style6css = self::ThemeCommentBoxSubmitCustomization();
+			if ( $style6css['modified'] ) {
+				$style6 = $style6css['css'];
+			}
+			$style7 = '';
+			$style7css = self::ThemeSidebarsCustomization();
+			if ( $style7css['modified'] ) {
+				$style7 = $style7css['css'];
+			}
 		}
 		self::$titleCustomized = false;
 		self::$titleDescriptionCustomized = false;
-		//print ".site-title, #site-title, .site-title a, #site-title a {" . $style . "; padding: 0;}\r\n";
+
 		if ( !empty( $style) ) {
 			print ".gftitle_customized {" . $style . "}\r\n";
 			self::$titleCustomized = ( 'font-weight: normal!important; font-style: normal!important; text-decoration: none!important; ' !== $style );
@@ -4044,7 +4064,10 @@ class GFontsEngine {
 		} else {
 			$textarea = "";
 		}
-		print "#gfcustomizedcomments, #gfcustomizedcomments h1,#gfcustomizedcomments h2,#gfcustomizedcomments h3,#gfcustomizedcomments div,#gfcustomizedcomments p,#gfcustomizedcomments span" . $textarea . ",#gfcustomizedcomments input[type=\"submit\"], #gfcustomizedcomments a{" . $style5 . "}\r\n";
+		if ( '' !== $textarea || '' !== $style5 ) {
+			print "#gfcustomizedcomments, #gfcustomizedcomments h1,#gfcustomizedcomments h2,#gfcustomizedcomments h3,#gfcustomizedcomments div,#gfcustomizedcomments p,#gfcustomizedcomments span" . $textarea . ",#gfcustomizedcomments input[type=\"submit\"], #gfcustomizedcomments a{" . $style5 . "}\r\n";
+		}
+
 		if ( $style6 != '' ) {
 			print "#gfcustomizedcomments input[type=\"submit\"] { " . $style6 . " }\r\n";
 		}
@@ -4248,27 +4271,63 @@ class GFontsEngine {
 	}
 
 	static public function ThemeMenuItemCustomization() {
-		$locations      = get_registered_nav_menus();
+		$modifiedg = false;
 		$menu_locations = get_nav_menu_locations();
 		$styles         = '';
 		foreach ( $menu_locations as $menu_location => $id ) {
-			$cst   = (array) ( $customized );
+			$modified = false;
 			$ctf   = get_theme_mod( 'gf_menu_font_name_' . $menu_location, '' );
+			if ( '' !== $ctf ) {
+				$modified = true;
+			}
 			$ctfs  = get_theme_mod( 'gf_menu_font_size_' . $menu_location, '' );
+			if ( '' !== $ctfs ) {
+				$modified = true;
+			}
 			$ctfb  = get_theme_mod( 'gf_menu_font_bold_' . $menu_location, 0 );
+			if ( 0 !== $ctfb ) {
+				$modified = true;
+			}
 			$ctfi  = get_theme_mod( 'gf_menu_font_italic_' . $menu_location, 0 );
+			if ( 0 !== $ctfi ) {
+				$modified = true;
+			}
 			$ctfu  = get_theme_mod( 'gf_menu_font_underline_' . $menu_location, 0 );
+			if ( 0 !== $ctfu ) {
+				$modified = true;
+			}
 			$ctfc  = get_theme_mod( 'gf_menu_font_color_' . $menu_location, '' );
+			if ( '' !== $ctfc ) {
+				$modified = true;
+			}
 			$ctfsv = get_theme_mod( 'gf_menu_font_shadow_vertical_' . $menu_location, 0 );
+			if ( 0 !== $ctfsv ) {
+				$modified = true;
+			}
 			$ctfsh = get_theme_mod( 'gf_menu_font_shadow_horizontal_' . $menu_location, 0 );
+			if ( 0 !== $ctfsh ) {
+				$modified = true;
+			}
 			$ctfsb = get_theme_mod( 'gf_menu_font_shadow_blur_' . $menu_location, 0 );
+			if ( 0 !== $ctfsb ) {
+				$modified = true;
+			}
 			$ctfsc = get_theme_mod( 'gf_menu_font_shadow_color_' . $menu_location, 0 );
-			$styles .= '.gfcustomizedmenu-' . $menu_location . ' li a { ';
-			$styles .= self::BuildTitleStyles( $ctf, $ctfs, $ctfc, $ctfb, $ctfi, $ctfu, $ctfsv, $ctfsh, $ctfsb, $ctfsc, '!important' );
-			$styles .= " }\r\n";
+			if ( 0 !== $ctfsc ) {
+				$modified = true;
+			}
+			if ( $modified ) {
+				$styles .= '.gfcustomizedmenu-' . $menu_location . ' li a { ';
+				$styles .= self::BuildTitleStyles( $ctf, $ctfs, $ctfc, $ctfb, $ctfi, $ctfu, $ctfsv, $ctfsh, $ctfsb, $ctfsc, '!important' );
+				$styles .= " }\r\n";
+				$modifiedg = true;
+			}
 		}
 
-		return $styles;
+		return array(
+			'css' => $styles,
+			'modified' => $modifiedg,
+		);
 	}
 
 	static public function LiveHoverMenuItemCustomization( $customized ) {
@@ -4310,28 +4369,64 @@ class GFontsEngine {
 	}
 
 	static public function ThemeHoverMenuItemCustomization() {
-		$locations      = get_registered_nav_menus();
 		$menu_locations = get_nav_menu_locations();
 		$styles         = '';
+		$modifiedg      = false;
 		foreach ( $menu_locations as $menu_location => $id ) {
-			$cst   = (array) ( $customized );
+			$modified       = false;
 			$ctf   = get_theme_mod( 'gf_menu_font_hover_name_' . $menu_location, '' );
+			if ( '' !== $ctf ) {
+				$modified = true;
+			}
 			$ctfs  = get_theme_mod( 'gf_menu_font_hover_size_' . $menu_location, '' );
+			if ( '' !== $ctfs ) {
+				$modified = true;
+			}
 			$ctfb  = get_theme_mod( 'gf_menu_font_hover_bold_' . $menu_location, 0 );
+			if ( 0 !== $ctfb ) {
+				$modified = true;
+			}
 			$ctfi  = get_theme_mod( 'gf_menu_font_hover_italic_' . $menu_location, 0 );
+			if ( 0 !== $ctfi ) {
+				$modified = true;
+			}
 			$ctfu  = get_theme_mod( 'gf_menu_font_hover_underline_' . $menu_location, 0 );
+			if ( 0 !== $ctfu ) {
+				$modified = true;
+			}
 			$ctfc  = get_theme_mod( 'gf_menu_font_hover_color_' . $menu_location, '' );
+			if ( '' !== $ctfc ) {
+				$modified = true;
+			}
 			$ctfsv = get_theme_mod( 'gf_menu_font_hover_shadow_vertical_' . $menu_location, 0 );
+			if ( 0 !== $ctfsv ) {
+				$modified = true;
+			}
 			$ctfsh = get_theme_mod( 'gf_menu_font_hover_shadow_horizontal_' . $menu_location, 0 );
+			if ( 0 !== $ctfsh ) {
+				$modified = true;
+			}
 			$ctfsb = get_theme_mod( 'gf_menu_font_hover_shadow_blur_' . $menu_location, 0 );
+			if ( 0 !== $ctfsb ) {
+				$modified = true;
+			}
 			$ctfsc = get_theme_mod( 'gf_menu_font_hover_shadow_color_' . $menu_location, 0 );
+			if ( 0 !== $ctfsc ) {
+				$modified = true;
+			}
 
-			$styles .= '.gfcustomizedmenu-' . $menu_location . ' li a:hover { ';
-			$styles .= self::BuildTitleStyles( $ctf, $ctfs, $ctfc, $ctfb, $ctfi, $ctfu, $ctfsv, $ctfsh, $ctfsb, $ctfsc, '!important' );
-			$styles .= " }\r\n";
+			if ( $modified ) {
+				$styles .= '.gfcustomizedmenu-' . $menu_location . ' li a:hover { ';
+				$styles .= self::BuildTitleStyles( $ctf, $ctfs, $ctfc, $ctfb, $ctfi, $ctfu, $ctfsv, $ctfsh, $ctfsb, $ctfsc, '!important' );
+				$styles .= " }\r\n";
+				$modifiedg = true;
+			}
 		}
 
-		return $styles;
+		return array(
+			'css' => $styles,
+			'modified' => $modifiedg,
+		);
 	}
 
 	static public function OpaqueCommentsTemplate( $file ) {
@@ -4420,20 +4515,54 @@ class GFontsEngine {
 	}
 
 	static public function ThemeCommentBoxCustomization() {
+		$modified = false;
 		$ctf   = get_theme_mod( 'gf_comment_font_name', '' );
+		if ( '' !== $ctf ) {
+			$modified = true;
+		}
 		$ctfs  = get_theme_mod( 'gf_comment_font_size', '' );
+		if ( '' !== $ctfs ) {
+			$modified = true;
+		}
 		$ctfb  = get_theme_mod( 'gf_comment_font_bold', 0 );
+		if ( 0 !== $ctfb ) {
+			$modified = true;
+		}
 		$ctfi  = get_theme_mod( 'gf_comment_font_italic', 0 );
+		if ( 0 !== $ctfi ) {
+			$modified = true;
+		}
 		$ctfu  = get_theme_mod( 'gf_comment_font_underline', 0 );
+		if ( 0 !== $ctfu ) {
+			$modified = true;
+		}
 		$ctfc  = get_theme_mod( 'gf_comment_font_color', '' );
+		if ( '' !== $ctfc ) {
+			$modified = true;
+		}
 		$ctfsv = get_theme_mod( 'gf_comment_font_shadow_vertical', 0 );
+		if ( 0 !== $ctfsv ) {
+			$modified = true;
+		}
 		$ctfsh = get_theme_mod( 'gf_comment_font_shadow_horizontal', 0 );
+		if ( 0 !== $ctfsh ) {
+			$modified = true;
+		}
 		$ctfsb = get_theme_mod( 'gf_comment_font_shadow_blur', 0 );
+		if ( 0 !== $ctfsb ) {
+			$modified = true;
+		}
 		$ctfsc = get_theme_mod( 'gf_comment_font_shadow_color', 0 );
-
-		$styles = self::BuildTitleStyles( $ctf, $ctfs, $ctfc, $ctfb, $ctfi, $ctfu, $ctfsv, $ctfsh, $ctfsb, $ctfsc, '!important' );
-
-		return $styles;
+		if ( 0 !== $ctfsc ) {
+			$modified = true;
+		}
+		if ( $modified ) {
+			$styles = self::BuildTitleStyles( $ctf, $ctfs, $ctfc, $ctfb, $ctfi, $ctfu, $ctfsv, $ctfsh, $ctfsb, $ctfsc, '!important' );
+		}
+		return array(
+			'css' => $styles,
+			'modified' => $modified,
+		);
 	}
 
 	static public function LiveCommentBoxSubmitCustomization( $customized ) {
@@ -4465,7 +4594,6 @@ class GFontsEngine {
 		$style = "";
 		if ( intval( $radius ) > 0 ) {
 			$style .= self::BuildBorderRadiusStyle( null, null, null, null, $radius );
-			//$style .= sprintf("-webkit-border-radius: %dpx!important; -moz-border-radius: %dpx!important; border-radius: %dpx!important;", $radius, $radius, $radius);
 		}
 
 		if ( $color != '' ) {
@@ -4500,57 +4628,113 @@ class GFontsEngine {
 	}
 
 	static public function ThemeCommentBoxSubmitCustomization() {
+		$modified = false;
 		$radius              = get_theme_mod( 'gf_comment_submit_radius', 0 );
+		if ( 0 !== $radius ) {
+			$modified = true;
+		}
 		$color               = get_theme_mod( 'gf_comment_submit_color', '' );
+		if ( '' !== $color ) {
+			$modified = true;
+		}
 		$textcolor           = get_theme_mod( 'gf_comment_submit_text_color', '' );
+		if ( '' !== $textcolor ) {
+			$modified = true;
+		}
 		$boxshadowv          = get_theme_mod( 'gf_comment_submit_box_shadow_v', 0 );
+		if ( 0 !== $boxshadowv ) {
+			$modified = true;
+		}
 		$boxshadowh          = get_theme_mod( 'gf_comment_submit_box_shadow_h', 0 );
+		if ( 0 !== $boxshadowh ) {
+			$modified = true;
+		}
 		$boxshadowblur       = get_theme_mod( 'gf_comment_submit_box_shadow_blur', 0 );
+		if ( 0 !== $boxshadowblur ) {
+			$modified = true;
+		}
 		$boxshadowspread     = get_theme_mod( 'gf_comment_submit_box_shadow_spread', 0 );
+		if ( 0 !== $boxshadowspread ) {
+			$modified = true;
+		}
 		$boxshadowcolor      = get_theme_mod( 'gf_comment_submit_box_shadow_color', '' );
+		if ( '' !== $boxshadowcolor ) {
+			$modified = true;
+		}
 		$buttonfloat         = get_theme_mod( 'gf_comment_submit_box_float', '' );
+		if ( '' !== $buttonfloat ) {
+			$modified = true;
+		}
 		$forcebuttonposition = get_theme_mod( 'gf_comment_submit_box_force_position', '' );
+		if ( '' !== $forcebuttonposition ) {
+			$modified = true;
+		}
 		$forcebuttoleft      = get_theme_mod( 'gf_comment_submit_box_force_position_left', '' );
+		if ( '' !== $forcebuttoleft ) {
+			$modified = true;
+		}
 		$forcebuttotop       = get_theme_mod( 'gf_comment_submit_box_force_position_top', '' );
+		if ( '' !== $forcebuttotop ) {
+			$modified = true;
+		}
 		$buttonforce         = get_theme_mod( 'gf_comment_submit_box_force_position', false );
+		if ( false !== $buttonforce ) {
+			$modified = true;
+		}
 		$buttonleft          = get_theme_mod( 'gf_comment_submit_box_force_position_left', '' );
+		if ( '' !== $buttonleft ) {
+			$modified = true;
+		}
 		$buttontop           = get_theme_mod( 'gf_comment_submit_box_force_position_top', '' );
+		if ( '' !== $buttontop ) {
+			$modified = true;
+		}
 
-		$style = "";
+		$style = '';
 		if ( intval( $radius ) > 0 ) {
 			$style .= self::BuildBorderRadiusStyle( null, null, null, null, $radius );
-			//$style .= sprintf("-webkit-border-radius: %dpx!important; -moz-border-radius: %dpx!important; border-radius: %dpx!important;", $radius, $radius, $radius);
+			$modified = true;
 		}
 
 		if ( $color != '' ) {
 			$style .= 'background-color: ' . $color . '!important;';
+			$modified = true;
 		}
 
 		if ( $textcolor != '' ) {
 			$style .= 'color: ' . $textcolor . '!important;';
+			$modified = true;
 		}
 
 		if ( $boxshadowcolor != '' && ( $boxshadowv != 0 || $boxshadowh != 0 || $boxshadowblur != 0 || $boxshadowspread != 0 ) ) {
 			$style .= sprintf( 'box-shadow: %dpx %dpx %dpx %dpx %s!important;', $boxshadowv, $boxshadowh, $boxshadowblur, $boxshadowspread, $boxshadowcolor );
+			$modified = true;
 		}
 
 		if ( ( $buttonfloat != '' ) && ( ! $buttonforce ) ) {
 			$style .= 'float: ' . $buttonfloat . '!important;';
+			$modified = true;
 		}
 
 		if ( $buttonforce ) {
 			$style .= 'position: relative!important;';
+			$modified = true;
 		}
 
 		if ( $buttonforce && $buttonleft != '' ) {
 			$style .= 'left: ' . (int) $buttonleft . 'px!important;';
+			$modified = true;
 		}
 
 		if ( $buttonforce && $buttontop != '' ) {
 			$style .= 'top: ' . (int) $buttontop . 'px!important;';
+			$modified = true;
 		}
 
-		return $style;
+		return array(
+			'css' => $style,
+			'modified' => $modified,
+		);
 	}
 
 	static public function DynamcSidebarParams( $params ) {
@@ -4577,96 +4761,253 @@ class GFontsEngine {
 		global $wp_registered_sidebars;
 		$style        = "";
 		$stylecontent = "";
+		$modifiedg = false;
+		$modified  = false;
 		foreach ( $wp_registered_sidebars as $sb ) {
 			$id        = $sb['id'];
 			$ctf       = get_theme_mod( 'gf_custom_widget_' . $id . '_font_name', '' );
+			if ( '' !== $ctf ) {
+				$modified = true;
+			}
 			$ctfs      = get_theme_mod( 'gf_custom_widget_' . $id . '_font_size', '' );
+			if ( '' !== $ctfs ) {
+				$modified = true;
+			}
 			$ccta      = get_theme_mod( 'gf_custom_widget_' . $id . '_text_align', '' );
+			if ( '' !== $ccta ) {
+				$modified = true;
+			}
 			$ctfb      = get_theme_mod( 'gf_custom_widget_' . $id . '_font_bold', 0 );
+			if ( 0 !== $ctfb ) {
+				$modified = true;
+			}
 			$ctfi      = get_theme_mod( 'gf_custom_widget_' . $id . '_font_italic', 0 );
+			if ( 0 !== $ctfi ) {
+				$modified = true;
+			}
 			$ctfu      = get_theme_mod( 'gf_custom_widget_' . $id . '_font_underline', 0 );
+			if ( 0 !== $ctfu ) {
+				$modified = true;
+			}
 			$ctfc      = get_theme_mod( 'gf_custom_widget_' . $id . '_font_color', '' );
+			if ( '' !== $ctfc ) {
+				$modified = true;
+			}
 			$ctfsv     = get_theme_mod( 'gf_custom_widget_' . $id . '_font_shadow_vertical', 0 );
+			if ( 0 !== $ctfsv ) {
+				$modified = true;
+			}
 			$ctfsh     = get_theme_mod( 'gf_custom_widget_' . $id . '_font_shadow_horizontal', 0 );
+			if ( 0 !== $ctfsh ) {
+				$modified = true;
+			}
 			$ctfsb     = get_theme_mod( 'gf_custom_widget_' . $id . '_font_shadow_blur', 0 );
+			if ( 0 !== $ctfsb ) {
+				$modified = true;
+			}
 			$ctfsc     = get_theme_mod( 'gf_custom_widget_' . $id . '_font_shadow_color', '' );
+			if ( '' !== $ctfsc ) {
+				$modified = true;
+			}
 			$ctbgcolor = get_theme_mod( 'gf_custom_widget_' . $id . '_background_color', '' );
+			if ( '' !== $ctbgcolor ) {
+				$modified = true;
+			}
 			$cltr      = get_theme_mod( 'gf_custom_widget_' . $id . '_top_left_radius', 0 );
+			if ( 0 !== $cltr ) {
+				$modified = true;
+			}
 			$crtr      = get_theme_mod( 'gf_custom_widget_' . $id . '_top_right_radius', 0 );
+			if ( 0 !== $crtr ) {
+				$modified = true;
+			}
 			$crbr      = get_theme_mod( 'gf_custom_widget_' . $id . '_bottom_right_radius', 0 );
+			if ( 0 !== $crbr ) {
+				$modified = true;
+			}
 			$clbr      = get_theme_mod( 'gf_custom_widget_' . $id . '_bottom_left_radius', 0 );
+			if ( 0 !== $clbr ) {
+				$modified = true;
+			}
 
 			$_titlepaddingtop     = 'gf_custom_widget_' . $id . '_text_padding_top';
 			$_titlepaddingbottom  = 'gf_custom_widget_' . $id . '_text_padding_bottom';
 			$v_titlepaddingbottom = get_theme_mod( $_titlepaddingbottom, '' );
+			if ( '' !== $v_titlepaddingbottom ) {
+				$modified = true;
+			}
 			$v_titlepaddingtop    = get_theme_mod( $_titlepaddingtop, '' );
+			if ( '' !== $v_titlepaddingtop ) {
+				$modified = true;
+			}
 
 			//////////////////////////////////////
 			$cctf       = get_theme_mod( 'gf_custom_widget_' . $id . '_content_font_name', '' );
+			if ( '' !== $cctf ) {
+				$modified = true;
+			}
 			$cctfs      = get_theme_mod( 'gf_custom_widget_' . $id . '_content_font_size', '' );
+			if ( '' !== $cctfs ) {
+				$modified = true;
+			}
 			$cctta      = get_theme_mod( 'gf_custom_widget_' . $id . '_content_text_align', '' );
-			$ccttalm    = get_theme_mod( 'gf_custom_widget_' . $id . '_content_text_left_margin' );
-			$ccttarm    = get_theme_mod( 'gf_custom_widget_' . $id . '_content_text_right_margin' );
+			if ( '' !== $cctta ) {
+				$modified = true;
+			}
+			$ccttalm    = get_theme_mod( 'gf_custom_widget_' . $id . '_content_text_left_margin', 0 );
+			if ( 0 !== $ccttalm ) {
+				$modified = true;
+			}
+			$ccttarm    = get_theme_mod( 'gf_custom_widget_' . $id . '_content_text_right_margin', 0 );
+			if ( 0 !== $ccttarm ) {
+				$modified = true;
+			}
 			$cctfb      = get_theme_mod( 'gf_custom_widget_' . $id . '_content_font_bold', 0 );
+			if ( 0 !== $cctfb ) {
+				$modified = true;
+			}
 			$cctfi      = get_theme_mod( 'gf_custom_widget_' . $id . '_content_font_italic', 0 );
+			if ( 0 !== $cctfi ) {
+				$modified = true;
+			}
 			$cctfu      = get_theme_mod( 'gf_custom_widget_' . $id . '_content_font_underline', 0 );
+			if ( 0 !== $cctfu ) {
+				$modified = true;
+			}
 			$cctfc      = get_theme_mod( 'gf_custom_widget_' . $id . '_content_font_color', '' );
+			if ( '' !== $cctfc ) {
+				$modified = true;
+			}
 			$cctfsv     = get_theme_mod( 'gf_custom_widget_' . $id . '_content_font_shadow_vertical', 0 );
+			if ( 0 !== $cctfsv ) {
+				$modified = true;
+			}
 			$cctfsh     = get_theme_mod( 'gf_custom_widget_' . $id . '_content_font_shadow_horizontal', 0 );
+			if ( 0 !== $cctfsh ) {
+				$modified = true;
+			}
 			$cctfsb     = get_theme_mod( 'gf_custom_widget_' . $id . '_content_font_shadow_blur', 0 );
+			if ( 0 !== $cctfsb ) {
+				$modified = true;
+			}
 			$cctfsc     = get_theme_mod( 'gf_custom_widget_' . $id . '_content_font_shadow_color', '' );
+			if ( '' !== $cctfsc ) {
+				$modified = true;
+			}
 			$cctbgcolor = get_theme_mod( 'gf_custom_widget_' . $id . '_content_background_color', '' );
+			if ( '' !== $cctbgcolor ) {
+				$modified = true;
+			}
 			$ccltr      = get_theme_mod( 'gf_custom_widget_' . $id . '_content_top_left_radius', 0 );
+			if ( 0 !== $ccltr ) {
+				$modified = true;
+			}
 			$ccrtr      = get_theme_mod( 'gf_custom_widget_' . $id . '_content_top_right_radius', 0 );
+			if ( 0 !== $ccrtr ) {
+				$modified = true;
+			}
 			$ccrbr      = get_theme_mod( 'gf_custom_widget_' . $id . '_content_bottom_right_radius', 0 );
+			if ( 0 !== $ccrbr ) {
+				$modified = true;
+			}
 			$cclbr      = get_theme_mod( 'gf_custom_widget_' . $id . '_content_bottom_left_radius', 0 );
+			if ( 0 !== $cclbr ) {
+				$modified = true;
+			}
 			//////////////////////////////////////
-
-			$styles = self::BuildTitleStyles( $ctf, $ctfs, $ctfc, $ctfb, $ctfi, $ctfu, $ctfsv, $ctfsh, $ctfsb, $ctfsc, '!important', true, $ccta );
+			$styles = '';
+			if ( $modified ) {
+				$styles = self::BuildTitleStyles( $ctf, $ctfs, $ctfc, $ctfb, $ctfi, $ctfu, $ctfsv, $ctfsh, $ctfsb, $ctfsc, '!important', true, $ccta );
+			}
 			if ( $ctbgcolor != '' ) {
 				$styles .= "background-color: " . $ctbgcolor . "!important;";
+				$modified = true;
 			}
 
 			$bradius = self::BuildBorderRadiusStyle( $cltr, $crtr, $crbr, $clbr );
 			if ( $bradius != '' ) {
 				$styles .= $bradius;
+				$modified = true;
 			}
 
 			if ( $v_titlepaddingbottom != '' ) {
 				$styles .= 'padding-bottom: ' . $v_titlepaddingbottom . ';';
+				$modified = true;
 			}
 
 			if ( $v_titlepaddingtop != '' ) {
 				$styles .= 'padding-top: ' . $v_titlepaddingtop . ';';
+				$modified = true;
 			}
 
 			if ( $styles != '' ) {
 				$style .= ".gfcustomized-" . $sb['id'] . " { " . $styles . " }\r\n";
+				$modified = true;
 			}
 
-			$stylescontent  = self::BuildTitleStyles( $cctf, $cctfs, $cctfc, $cctfb, $cctfi, false, $cctfsv, $cctfsh, $cctfsb, $cctfsc, '!important', true, $cctta ); //, $ccttalm, $ccttarm);
-			$stylescontent2 = self::BuildTitleStyles( $cctf, $cctfs, $cctfc, $cctfb, $cctfi, $cctfu, $cctfsv, $cctfsh, $cctfsb, $cctfsc, '!important', true, '', $ccttalm, $ccttarm );
+			$stylescontent = '';
+			$stylescontent2 = '';
+			if ( $modified ) {
+				$stylescontent = self::BuildTitleStyles(
+					$cctf,
+					$cctfs,
+					$cctfc,
+					$cctfb,
+					$cctfi,
+					false,
+					$cctfsv,
+					$cctfsh,
+					$cctfsb,
+					$cctfsc,
+					'!important',
+					true,
+					$cctta
+				); //, $ccttalm, $ccttarm);
+				$stylescontent2 = self::BuildTitleStyles(
+					$cctf,
+					$cctfs,
+					$cctfc,
+					$cctfb,
+					$cctfi,
+					$cctfu,
+					$cctfsv,
+					$cctfsh,
+					$cctfsb,
+					$cctfsc,
+					'!important',
+					true,
+					'',
+					$ccttalm,
+					$ccttarm
+				);
+			}
 			if ( $cctbgcolor != '' ) {
 				$stylescontent .= "background-color: " . $cctbgcolor . "!important;";
-				//$stylescontent2 .= "background-color: " . $cctbgcolor . "!important;";
+				$modified = true;
 			}
 
 			$bradiuscontent = self::BuildBorderRadiusStyle( $ccltr, $ccrtr, $ccrbr, $cclbr );
 			if ( $bradiuscontent != '' ) {
 				$stylescontent .= $bradiuscontent;
 				$stylescontent2 .= $bradiuscontent;
+				$modified = true;
 			}
 
 			if ( $stylescontent != '' ) {
 				$stylecontent .= ".gfcustomized-widget-" . $sb['id'] . " a, .gfcustomized-widget-" . $sb['id'] . ",  .gfcustomized-widget-" . $sb['id'] . " { " . $stylescontent . " }\r\n";
+				$modified = true;
 			}
 
 			if ( $stylescontent2 != '' ) {
 				$stylecontent .= ".gfcustomized-widget-body-" . $sb['id'] . "+, .gfcustomized-widget-body-" . $sb['id'] . "+ { " . $stylescontent2 . " }\r\n";
+				$modified = true;
 			}
 		}
 
-		return $style . $stylecontent;
+		return array(
+			'css' => $style . $stylecontent,
+			'modified' => $modified,
+		);
 	}
 
 	static public function LiveSidebarsCustomization( $customized ) {
