@@ -4462,9 +4462,10 @@ class GFontsEngine {
 			if ( $commenttype == 'wordpress' || $commenttype == 'default' ) {
 				$th   = wp_get_theme();
 				$name = $th->get( 'Name' );
-				//update_option('gf_customizator_theme_' . $name, $file);
-				define( 'COMMENT_INCLUDE_FILE', $file );
-				$file = plugin_dir_path( __FILE__ ) . '../utils/comments.php';
+				if ( file_exists( $file ) ) {
+					define('COMMENT_INCLUDE_FILE', $file);
+					$file = plugin_dir_path(__FILE__) . '../utils/comments.php';
+				}
 			} elseif ( $commenttype == 'disabled' ) {
 				$file = plugin_dir_path( __FILE__ ) . '../utils/nocomments.php';
 			}
