@@ -101,6 +101,7 @@ class GFontsEngine {
 	public static $editLoaded = false;
 	public static $titleCustomized = false;
 	public static $titleDescriptionCustomized = false;
+	public static $bufferingStarted = false;
 
 	public function Run( $file ) {
 		if ( isset( $_GET['page'] ) && 'gf_help' === $_GET['page'] ) {
@@ -301,10 +302,7 @@ class GFontsEngine {
 			), PHP_INT_MAX
 			);
 			add_action(
-				'wp_footer', array( 'GFontsEngine', 'FooterCss' )
-			);
-			add_action(
-				'wp_footer', array( 'GFontsEngine', 'ThemeModCustomCss' )
+				'wp_head', array( 'GFontsEngine', 'ThemeModCustomCss' ), PHP_INT_MAX -1
 			);
 			if ( ! is_admin() ) {
 				add_action(
@@ -5166,13 +5164,6 @@ class GFontsEngine {
 		return $style;
 	}
 
-	static public function FooterCss() {
-		print "\r\n<script type=\"text/javascript\">";
-		print "jQuery('.gfcustomized-widget span.gfcustomized').attr('style', 'font-family: inherit;');\r\n";
-		print "jQuery('.gfcustomized-widget span.gfcustomized').attr('style', 'text-decoration: inherit;');\r\n";
-		print "</script>\r\n";
-	}
-
 	static public function ContentFilterProcessor( $content ) {
 		$wmode = get_option( self::PLUGIN_OPTION_SOCIAL_BUTTONS_GLOBAL_SETTING, 3 );
 		if ( is_single() && ( $wmode < 3 ) ) {
@@ -7995,10 +7986,15 @@ class GFontsEngine {
 	}
 
 	static public function OutputBufferStart() {
+		self::$bufferingStarted = true;
 		ob_start( array( 'GFontsEngine', 'FilterOutputHtml' ) );
 	}
 
 	static public function OutputBufferEnd() {
+		if ( ! self::$bufferingStarted ) {
+			return;
+		}
+		self::$bufferingStarted = false;
 		ob_end_flush();
 	}
 
@@ -8096,5 +8092,4 @@ class GFontsEngine {
 		</div>
 	<?php
 	}
-
 }
