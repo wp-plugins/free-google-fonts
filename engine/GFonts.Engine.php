@@ -27,7 +27,7 @@ class GFontsEngine {
 	const PLUGIN_ACTION_INSTALL_FONT = 'gfonts_install_font';
 	const PLUGIN_ACTION_UNINSTALL_FONT = 'gfonts_uninstall_font';
 	const PLUGIN_META_NO_FONT = 'gfonts_meta_no_font';
-	const PLUGIN_VERSION = '2.0.3';
+	const PLUGIN_VERSION = '2.0.4';
 	const PLUGIN_MENU_NAME = 'Google Fonts';
 	const PLUGIN_MENU_TITLE = 'Google Fonts';
 	const PLUGIN_SLUG = 'gfonts';
